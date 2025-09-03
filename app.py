@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 from flask_sqlalchemy import SQLAlchemy
 import os
 import click
 from flask.cli import with_appcontext
 from collections import defaultdict
+import csv
+import io
+from sqlalchemy.orm import joinedload
 
 # --- App Setup ---
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -59,13 +62,11 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Get beneficiary info
     household_id = request.form.get('household_id')
     if not household_id:
         flash('Household ID is required.', 'danger')
         return redirect(url_for('index'))
 
-    # Find existing beneficiary or create a new one
     beneficiary = Beneficiary.query.filter_by(household_id=household_id).first()
     if not beneficiary:
         beneficiary = Beneficiary(
@@ -79,15 +80,13 @@ def submit():
         )
         db.session.add(beneficiary)
 
-    # Create a new assessment
     assessment = Assessment(beneficiary=beneficiary)
     db.session.add(assessment)
 
-    # Process answers
     for key, value in request.form.items():
         if key.startswith('q-'):
             question_id = int(key.split('-')[1])
-            if value: # Only save if an answer was provided
+            if value:
                 answer = Answer(
                     assessment=assessment,
                     question_id=question_id,
@@ -108,6 +107,50 @@ def submit():
 def success():
     return render_template('success.html')
 
+@app.route('/results')
+def results():
+    assessments = Assessment.query.options(
+        joinedload(Assessment.beneficiary)
+    ).order_by(Assessment.date_taken.desc()).all()
+    return render_template('results.html', assessments=assessments)
+
+@app.route('/download_csv')
+def download_csv():
+    questions = Question.query.order_by(Question.order).all()
+    question_headers = [q.text for q in questions]
+    headers = [
+        'Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'
+    ] + question_headers
+
+    assessments = Assessment.query.options(
+        joinedload(Assessment.beneficiary),
+        joinedload(Assessment.answers).joinedload(Answer.question)
+    ).all()
+
+    rows = []
+    for assessment in assessments:
+        answer_map = {ans.question_id: ans.value for ans in assessment.answers}
+        row = {
+            'Assessment ID': assessment.id,
+            'Beneficiary Name': assessment.beneficiary.name,
+            'Household ID': assessment.beneficiary.household_id,
+            'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        for q in questions:
+            row[q.text] = answer_map.get(q.id, '')
+        rows.append(row)
+
+    si = io.StringIO()
+    writer = csv.DictWriter(si, fieldnames=headers)
+    writer.writeheader()
+    writer.writerows(rows)
+    output = si.getvalue()
+
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=4ps_assessments_report.csv"}
+    )
 
 # --- DB Initialization Command ---
 def get_all_questions():
@@ -253,7 +296,4 @@ def init_db_command():
 app.cli.add_command(init_db_command)
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    # app.run(host="0.0.0.0", port=5000, debug=True)
-    app.run(host="0.0.0.0", port=9000, debug=True, ssl_context="adhoc")
-
+    app.run(debug=True)

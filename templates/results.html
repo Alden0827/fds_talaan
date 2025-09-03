@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}View Results{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Assessment Results</h1>
+    <a href="{{ url_for('download_csv') }}" class="btn btn-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+        </svg>
+        Download CSV Report
+    </a>
+</div>
+
+{% if assessments %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Assessment ID</th>
+                <th scope="col">Beneficiary Name</th>
+                <th scope="col">Household ID</th>
+                <th scope="col">Date Taken</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assessment in assessments %}
+            <tr>
+                <td>{{ assessment.id }}</td>
+                <td>{{ assessment.beneficiary.name }}</td>
+                <td>{{ assessment.beneficiary.household_id }}</td>
+                <td>{{ assessment.date_taken.strftime('%Y-%m-%d %I:%M %p') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+    No assessments have been submitted yet.
+</div>
+{% endif %}
+{% endblock %}
