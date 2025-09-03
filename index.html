@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4Ps Talaan ng Pagbabago at Pag-unlad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h1>
+            <h2>Pantawid Pamilyang Pilipino Program</h2>
+            <h3>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h3>
+            <h4>Information Sheet</h4>
+        </header>
+
+        <form>
+            <section class="info-section">
+                <h3>Personal Information</h3>
+                <div class="info-grid">
+                    <div class="info-item"><label for="pangalan">Pangalan:</label><input type="text" id="pangalan" name="pangalan"></div>
+                    <div class="info-item"><label for="kasarian">Kasarian:</label><input type="text" id="kasarian" name="kasarian"></div>
+                    <div class="info-item"><label for="relasyon">Relasyon sa Grantee:</label><input type="text" id="relasyon" name="relasyon"></div>
+                    <div class="info-item"><label for="tirahan">Tirahan:</label><input type="text" id="tirahan" name="tirahan"></div>
+                    <div class="info-item"><label for="household-id">Household ID number:</label><input type="text" id="household-id" name="household-id"></div>
+                    <div class="info-item"><label for="parent-group">Pangalan ng Parent Group:</label><input type="text" id="parent-group" name="parent-group"></div>
+                    <div class="info-item"><label for="contact-number">Contact Number:</label><input type="text" id="contact-number" name="contact-number"></div>
+                </div>
+            </section>
+
+            <section class="introduction">
+                <p>Ang "Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad" ay isang beneficiary self-assessment tool na idinisenyo upang sukatin at subaybayan ang inyong pag-unlad o pagbabago sa mga partner-beneficiaries ng 4Ps.</p>
+                <p>Ito ay sistematikong pamamaraan na nagbibigay-daan upang makita ang resulta mula sa paglahok sa 4Ps. Isa rin itong kasangkapan na magsisilbing gabay sa pagpaplano at pagpapatupad ng mga programa at serbisyo tulad ng Family Development Session (FDS), para sa mga pamilyang benepisyaryo ng 4Ps.</p>
+            </section>
+
+            <!-- Katatasan sa Programa -->
+            <section>
+                <div class="instructions">
+                    <p><strong>Panuto:</strong> Basahing mabuti ang mga sumusunod na pahayag. Tiyakin na ang inyong mga sagot ay naayon sa inyong karanasan at pagkaunawa sa mga pahayag. Mula 1 hanggang 4, suriin ang inyong kaalaman, at ilagay ang wastong marka na sa palagay mo ay akma sa pahayag. Tandaan, walang maling sagot.</p>
+                    <ul>
+                        <li>4- Lubos na sumasang-ayon</li>
+                        <li>3- Sumasang-ayon</li>
+                        <li>2- Hindi Sumasang-ayon</li>
+                        <li>1- Lubos na Hindi Sumasang-ayon</li>
+                        <li>N/A- Hindi angkop ang pahayag para sa sambahayan</li>
+                    </ul>
+                </div>
+                <table id="katatasan-table">
+                    <caption>KATATASAN SA PROGRAMA</caption>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Layunin</td>
+                            <td>1</td>
+                            <td>Natutukoy ang mga layunin ng Pantawid Pamilyang Pilipino Program (4Ps)</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>Pamantayan sa Pagiging 4Ps (Criteria)</td>
+                            <td>2</td>
+                            <td>Naipapaliwanag ang mga pamantayan sa pagpili ng mga pamilyang magiging miyembro ng Programa.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>Kondisyon</td>
+                            <td>3</td>
+                            <td>Naipapaliwanag ang mga kondisyon ng mga Programa.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                         <tr>
+                            <td>Oath of Commitment</td>
+                            <td>4</td>
+                            <td>Natutukoy ang mga nilalaman ng Panunumpa (Oath of Commitment)</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="6">Case Management</td>
+                            <td>5</td>
+                            <td>Naipapaliwanag ang Listahanan Assessment</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                         <tr>
+                            <td>6</td>
+                            <td>Naipapaliwanag ang Social Welfare Development Indicator (SWDI) bilang isa sa sukatan sa pag-graduate sa Programa</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                         <tr>
+                            <td>7</td>
+                            <td>May nakasulat na Family Vision na nauunawaan ng lahat ng miyembro.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                         <tr>
+                            <td>8</td>
+                            <td>Kabahagi ang pamilya sa pagbuo ng plano o Household Intervention Plan</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Natutukoy ang mga hakbang ng Case Management na pagdadaanan ng aming Pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Nauunawaaan ang mga batayan ng aming pagtatapos sa Programa.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3">Responsibilidad bilang miyembro</td>
+                            <td>11</td>
+                            <td>Nagagawa ang wastong proseso ng pag-update ng mga datos ng aming pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Nagagawa ang tamang proseso sa paghain ng katanungan o reklamo sa programa.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Nauunawan ang prohibisyon o hindi naangkop sa programa</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Edukasyon, Kalusugan, etc. -->
+            <section>
+                <div class="instructions">
+                    <p><strong>Panuto:</strong> Gamitin ang mga sumusunod na marka upang tukuyin ang inyong antas ng pagsang-ayon o di-pagsang-ayon sa bawat pahayag sa Edukasyon, Family Life Management, Health, Nutrisyon, Financial Literacy at Livelihood. Mangyaring magbigay ng inyong mga sagot batay sa inyong sariling karanasan at opinyon.</p>
+                    <p>Suriin at tasahin (assess) ang inyong sariling kaalaman batay sa mga sumusunod na marka (rating):</p>
+                    <ul>
+                        <li>4- Mataas ang kaalaman at naisasabuhay</li>
+                        <li>3- May sapat na kaalaman pero hindi naisasabuhay</li>
+                        <li>2- May konting kaalaman</li>
+                        <li>1- Hindi alam/naiintidihan</li>
+                        <li>N/A- Hindi angkop ang katanungan para sa sambahayan</li>
+                    </ul>
+                </div>
+
+                <!-- Edukasyon Table -->
+                <table id="edukasyon-table">
+                    <caption>EDUKASYON</caption>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Nagpapatupad ng hakbangin para pahalagahan ang edukasyon para sa kinabukasan ng anak.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ang mga batang minomonitor ng programa sa pamilya ay pumapasok sa paaralan alinsunod sa tinakdang kondisyon:
+                                <ul class="sub-list">
+                                    <li>a. Batang edad 3-4 sa Day Care Center o Child Development Center.</li>
+                                    <li>b. Batang edad 5-12 sa Elementarya</li>
+                                    <li>c. Batang edad 13-15 sa Junior High School</li>
+                                    <li>d. Batang edad 16-18 sa Senior High School</li>
+                                    <li>e. Batang nasa Flexible Learning Options: Alternative Learning System (ALS), Alternative Delivery Modes (ADMs), MADARIS for Muslim.</li>
+                                </ul>
+                            </td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                         <tr>
+                            <td>3</td>
+                            <td>Naglalaan ng sapat na oras para kumustahin ang anak sa kanyang pag-aaral.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Naglalaan ng sapat na oras para matulungan ang mga anak sa kanilang mga gawain sa paaralan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Naibibigay ang mga pangangailangan ng mga anak sa kanilang pag-aaral.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Dumadalo sa mga Parent-Teacher Association (PTA) meeting.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Kalusugan Table -->
+                <table id="kalusugan-table">
+                    <caption>KALUSUGAN</caption>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Regular na nagpapacheck-up ang buntis na miyembro ng pamilya sa health center or health facility/clinic o hospital.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Kasunod nito ay ang pagpapost-natal Check-up matapos manganak.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Ang buntis ay nanganganak sa isang Accredited Birthing Facility.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Nagpapapurga ang mga batang edad 1-14 sa aming sambahayan dalawang beses sa isang taon.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Pinababakunahan ang mga batang edad 0 hanggang 23 buwan gulang.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Naipapatupad ang mga kaalaman sa unang isang libong (1000) araw ng buhay o F1KD pagkatapos magsilang ng anak.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Nag a-update ng datos tungkol sa kalusugan ng pamilya (halimbawa: nabuntis, nanganak at etc.).</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Pinapainom ang mga anak ng bitaminang angkop sa kanilang edad.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Ang mga miyembro ng sambahayan ay nagpapakonsulta at tumatangkilik ng mga serbisyong pangkalusugan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Ang bawat miyembro ng pamilya ay binibigyan ng suporta sa pagpapanatili ng kanilang kalusugan habang sila ay nagdadalang-tao, at para sa kalusugan ng mga batang may edad 0-5.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Gumagamit ng mga pamamaraan sa pagpaplano ng pamilya (Family Planning Method).</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Ang pamilya ay may ligtas na pinagkukunan ng tubig sa pangkalahatang gamit (General Use) tulad ng pampaligo, panglaba, panghugas ng pinagkainan, panlinis ng bahay, atbp.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Ang mga miyembro ng pamilya ay naghuhugas ng kamay bago at pagkatapos kumain at pagkatapos gumamit ng palikuran gamit ang malinis na tubig at sabon.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Binibigyan ng karampatang lunas ang miyembro ng pamilya na may sakit.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Nutrisyon Table -->
+                <table id="nutrisyon-table">
+                    <caption>NUTRISYON</caption>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Ang mga batang edad 0-6 buwan ay eksklusibong pinapasuso ng gatas ng ina.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ang mga batang edad na anim na buwan ay binibigyan na ng pagkain at patuloy na pinapasuso ng gatas ng ina hanggang dalawang taon.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Kumakain ng masusustansyang pagkain batay sa panuntunan ng Pinggang Pinoy.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Kumakain ang sambahayan ng mga pinatibay na pagkain (Fortified Foods)</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Ang mga batang nasa edad 0-5 taon ay nasa normal na timbang.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Ang mga batang nasa edad 0-5 taon ay nasa normal na tangkad.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Nagtatanim ng prutas o/at gulay sa bakuran.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Kumakain ng gulay o/at prutas na galing sa gulayan sa sariling bakuran o barangay.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                     <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Pamamahala sa Buhay Pamilya Table -->
+                <table id="pamilya-table">
+                    <caption>PAMAMAHALA SA BUHAY PAMILYA</caption>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 30 rows for this table -->
+                        <tr>
+                            <td>1</td>
+                            <td>Ako at ang aking asawa o partner ay may pantay na responsibilidad sa pagpapatakbo ng pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ako at ang aking asawa o partner ay pantay sa responsibilidad sa pagpapalaki sa aming mga anak.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Ako at ang aking asawa o partner ay nagpapatupad ng hakbangin para mapanatili ang maayos na ugnayan ng pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Naglalaan ng oras para sa one-on-one time para sa isa't isa (Family Bonding).</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Bukas ang komunikasyon ng pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Nagtutulungan ang bawat miyembro ng pamilya sa gawaing bahay.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Bahagi ang bawat miyembro ng aking pamilya sa mga desisyong pangsambahayan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Nagtutulungan ang bawat miyembro ng pamilya sa paghahanap ng solusyon o pagresolba sa mga problema.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Pinapatupad ang wastong pagdidisiplina sa mga bata sa sambahayan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Nagpapakita ako ng pagmamahal at positibong damdamin sa aking mga anak</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Sumusunod at tumutugon ako sa mga hakbangin o initisyatibo ng aking mga anak</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Nakikipag-usap ako ng malapit sa aking anak (mayroon man o walang salita)</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Napupuri ang bawat miyembro ng sambahayan sa kanilang mabuting gawi at tagumpay.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Nakatuon ako sa mga interes at karanasan ng aking mga anak</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>Inilalarawan ko, binibigyang kahulugan at nagpapakita ako na may sigla sa mga karanasan at interes ng aking mga anak</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>Pinapalawak at pinapayaman ko ang mga karanasan ng aking mga anak sa pamamagitan ng pagkonekta sa kanilang mga imahinasyon at lohika</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>Sinusuportahan ko ang aking mga anak sa pamamagitan ng pagtatakda ng mga limitasyon sa positibong paraan, sa pamamagitan ng pagturo ng mga kahihinatnan at pag-aalok ng mga alternatibo</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>Natutukoy ang mga palatandaan na maaaring may pinagdadaanang problema, isyu o suliranin ang miyembro ng pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>May kaalaman ang bawat miyembro ng sambahayan sa karapatang may kinalaman sa mga bata at kababaihan</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>Ang batang nasa edad na 14 na taong gulang pababa sa aming sambahayan ay hindi naghahanap-buhay.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>Nagpapatupad ng patakarang pangkaligtasan ang pamilya laban sa anumang panganib, sakuna o disaster.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td>Nakahanda ang emergency balde o bag na magagamit sa panahon ng sakuna.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td>May nakasulat na Family Disaster Action Plan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>24</td>
+                            <td>May updated na Family Emergency Directory.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>25</td>
+                            <td>Nauunawaan ang mga isyu at suliranin sa komunidad.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>26</td>
+                            <td>Natutukoy ang tamang solusyon sa isyu at suliranin ng komunidad.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>27</td>
+                            <td>Ako at ang aking pamilya ay aktibong nakikibahagi sa mga proyekto o aktibidad ng aming komunidad gaya ng Clean-Up drive at iba pang gawain.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>28</td>
+                            <td>Nakakapag access ng iba’t-ibang programa ng pamahalaan o pribadong organisasyon batay sa aming pangangailangan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>29</td>
+                            <td>Anumang diskriminasyon at anyo ng karahasan sa kasarian ay hindi umiiral sa sambahayan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>30</td>
+                            <td>Natutukoy ang pagkakaiba ng Sex at Gender.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Kabuhayan Table -->
+                <table id="kabuhayan-table">
+                    <caption>KABUHAYAN AT KAALAMAN SA PANANALAPI</caption>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Mga Pahayag</th>
+                            <th>Baseline na Pagsusuri<br>Petsa: _______</th>
+                            <th>Unang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalawang Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikatlong Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikaapat na Pagsusuri<br>Petsa: ________</th>
+                            <th>Ikalimang Pagsusuri<br>Petsa: ________</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 19 rows for this table -->
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                Nagagamit ang aming Cash Card sa iba pang pampinansyal na transaksyon (transaction account).
+                                <ul class="sub-list">
+                                    <li>1.1 Pag-iipon</li>
+                                    <li>1.2 Pagpapadala o Pagtanggap ng pera</li>
+                                    <li>1.3 Pambayad sa mga gastusin o bilihin</li>
+                                </ul>
+                            </td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>May isang miyembro ng pamilya ang may regular na hanapbuhay at kita (6 na buwan pataas nang kumikita).</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Lumalahok sa mga aktibidad na nakakatulong upang mapalawak ang kaalaman ng pamilya sa tamang paghawak ng pera.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>May nasusulat na planong pinansyal ang sambahayan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Pinapatupad ng pamilya ang praktikal na hakbang sa pagbabadyet/ laang-gugulin.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Regular na pinag-uusapan ng pamilya ang kalagayang pinansyal.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Regular na sinusubaybayan ang mga gastos at badyet ng pamilya.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Marunong sa mga pangunahing mathematical operations gaya ng addition, subtraction, multiplication, at division.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Nakakapag-ipon gamit ang nakasanayang pamamaraan at hindi sa bangko (Conventional Method).</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Nakakapag-ipon sa bangko.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Nakakapag-ipon para sa mga emergency na gastos.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Ginagamit ang iba't ibang Digital Financial Services.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Aktibong miyembro ng Insurance.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>May mga napundar na ari-arian.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>Nag-aacess ng tulong sa “Micro credit” institution.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>May karanasan na gumawa ng plano para sa negosyo.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>May karanasan sa pagbebenta ng mga produkto at paghihikayat ng mga mamimili.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>Kumikita ang sambahayan mula sa bakuran/communal garden.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>Mayroon ng kalayaang pang-pinansyal (financial freedom) ang sambahayan.</td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                            <td><input type="text" size="5"></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">KABUUANG MARKA</td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                            <td class="total-score"><input type="text" size="5" disabled></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            <!-- Narrative Sections -->
+            <section class="narrative-section">
+                <h3>MGA TANONG SA PAGSISIYASAT</h3>
+
+                <fieldset>
+                    <legend>BASELINE</legend>
+                    <div class="narrative-grid">
+                        <div>
+                            <h4>KATATASAN SA PROGRAMA</h4>
+                            <div class="question"><label>1.Ano ang layunin ng 4Ps?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>2. Anu-ano ang mga kondisyon ng programa?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>3.Ano ang batayan ng pagtatapos sa programa?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>4. Ano ang prohibisyon o hindi naangkop sa programa?</label><textarea rows="3"></textarea></div>
+                        </div>
+                        <div>
+                            <h4>EDUKASYON</h4>
+                            <div class="question"><label>1.Ano ang kahalagahan ng edukasyon sa bata?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>2. Ano ang kondisyon ng edukasyon sa programa?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>3. Paano natutulungan at nasusuportahan ang anak sa kanilang pag-aaral?</label><textarea rows="3"></textarea></div>
+                        </div>
+                        <div>
+                            <h4>PAMAMAHALA SA SAMBAHAYAN</h4>
+                            <div class="question"><label>1. Paano dinidisiplina ang mga bata sa sambahayan?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>2. Anu-ano ang mga karapatang may kinalaman sa mga bata at kababaihan?</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>3. Ano ang iba’t-ibang programa ng pamahalaan o pribadong organisasyon na na-access ng pamilya sa loob ng isang taon?</label><textarea rows="5"></textarea></div>
+                        </div>
+                        <div>
+                            <h4>KABUHAYAN AT KAALAMAN SA PANANALAPI</h4>
+                            <div class="question"><label>1. Ano ang mga karanasan sa pagbebenta ng mga produkto</label><textarea rows="3"></textarea></div>
+                            <div class="question"><label>2. Ano ang kakayahan sa kabuhayan (livelihood skills) na nais matutunan?</label><textarea rows="3"></textarea></div>
+                        </div>
+                        <div>
+                            <h4>PANINILAY</h4>
+                             <div class="question"><label>Base sa naging resulta ng inyong pagtatasa, alin sa mga pahayag sa taas ang mas tumatak sa inyo at bakit?</label><textarea rows="5"></textarea></div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>UNANG PAGSISIYASAT</legend>
+                    <!-- Repeated questions for first survey -->
+                </fieldset>
+
+                <fieldset>
+                    <legend>PANGALAWANG PAGSISIYASAT</legend>
+                    <!-- Repeated questions for second survey -->
+                </fieldset>
+
+                <fieldset>
+                    <legend>PANGATLONG PAGSISIYASAT</legend>
+                     <!-- Repeated questions for third survey -->
+                </fieldset>
+
+                <div class="instructions final-instruction">
+                    <p><strong>PANUTO:</strong> PARA SA PANG-APAT AT MGA SUMUSUNOD NA PAGSIYASAT, ISULAT ANG INYONG SAGOT SA MGA TANONG SA INYONG TALAAARAWAN O NOTEBOOK</p>
+                </div>
+            </section>
+
+            <section class="signature-section">
+                <h3>Signatures</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Baseline</th>
+                            <th>Unang Pagsusuri</th>
+                            <th>Ikalawang Pagsusuri</th>
+                            <th>Ikatlong Pagsusuri</th>
+                            <th>Ikaapat na Pagsusuri</th>
+                            <th>Ikalimang Pagsusuri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pangalan ng Benepisyaryo</td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                            <td><input type="text" placeholder="Lagda/Tumbmark"></td>
+                        </tr>
+                        <tr>
+                            <td>Pangalan ng City/Municipal Link/Field Staff</td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                            <td><input type="text" placeholder="Lagda"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="interpretation-guide">
+                <h3>Tagubilin sa pagkalkula ng marka:</h3>
+                <p><strong>Bawat core area:</strong> Kunin ang kabuuan at hatiin sa bilang ng mga naaangkop na indicator</p>
+                <p><strong>Overall Score:</strong> Kunin ang kabuuan at hatiin ito sa anim para makuha ang iskor</p>
+                <h4>INTERPRETATION</h4>
+                <table>
+                    <tr>
+                        <td>3.50 - 4.00 : Matagumpay na Pagbabago (Successful Transformation)</td>
+                        <td>Ang mga marka sa saklaw na ito ay kumakatawan sa natatanging pag-unlad sa lahat ng dimensyon. Ang inisyatibo tungo sa pagbabago ay lubos na isinabuhay, at ang mga indibidwal ay aktibong nakikilahok sa pagbabago, na nagpapakita ng mataas na antas ng dedikasyon at pagpapatupad.</td>
+                    </tr>
+                    <tr>
+                        <td>3.01- 3.49: Malawakang Pag-unlad (Advanced Progress)</td>
+                        <td>Ang mga marka na nabibilang sa saklaw na ito ay nagpapahiwatig ng malakas na pundasyon na may kaugnayan sa inisyatibo ng pagbabago. Ang mga indibidwal ay aktibong nagsasanay at nagpapahusay upang maisakatuparan ang pagbabago.</td>
+                    </tr>
+                    <tr>
+                        <td>2.01-3:00 : Katamtamang Pag-unlad (Moderate Progress)</td>
+                        <td>Ang mga marka sa saklaw na ito ay sumasalamin sa katamtamang antas ng kamalayan tungkol sa pagbabago at lumalagong hangarin at motibasyon na maging bahagi ng pagbabago. Ang mga pagsisikap ay nakatuon na ngayon sa pagbuo ng kaalaman at kakayahan na kailangan para sa matagumpay na pagpapatupad.</td>
+                    </tr>
+                    <tr>
+                        <td>1.50-2.00 :Papaunlad na Kamalayan at Hangarin (Developing Awareness and Desire)</td>
+                        <td>Ang mga marka sa saklaw na ito ay nagpapakita ng ilang pag-unlad sa pagtaas ng kamalayan tungkol sa pagbabago, at pagsisimula ng hangaring makiisa at makibahagi tungo sa pagbabago. Gayunpaman, kailangangang magsumikap upang mapabuti pa ang mga aspetong ito.</td>
+                    </tr>
+                     <tr>
+                        <td>1.00-1.49:Limitadong pagtanggap (Limited adoption)</td>
+                        <td>Ang mga marka sa saklaw na ito ay nagpapahiwatig ng malaking kakulangan sa kamalayan, pag-unawa, at pagsang-ayon sa inisyatibo ng pagbabago. Bukod dito, may kakulangan din sa hangarin o motibasyon na makibahagi sa pagbabago, na nagreresulta sa limitadong pagtanggap at pakikilahok.</td>
+                    </tr>
+                </table>
+            </section>
+
+        </form>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
