@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 from flask_sqlalchemy import SQLAlchemy
 import os
 import click
 from flask.cli import with_appcontext
 from collections import defaultdict
+import csv
+import io
+from sqlalchemy.orm import joinedload
 
 # --- App Setup ---
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -107,6 +110,63 @@ def submit():
 @app.route('/success')
 def success():
     return render_template('success.html')
+
+@app.route('/results')
+def results():
+    assessments = Assessment.query.options(
+        joinedload(Assessment.beneficiary)
+    ).order_by(Assessment.date_taken.desc()).all()
+    return render_template('results.html', assessments=assessments)
+
+@app.route('/download_csv')
+def download_csv():
+    # 1. Define CSV Headers
+    questions = Question.query.order_by(Question.order).all()
+    # Using question text for headers for readability
+    question_headers = [q.text for q in questions]
+    headers = [
+        'Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'
+    ] + question_headers
+
+    # 2. Fetch all data
+    # Eager load related data to avoid N+1 queries
+    assessments = Assessment.query.options(
+        joinedload(Assessment.beneficiary),
+        joinedload(Assessment.answers).joinedload(Answer.question)
+    ).all()
+
+    # 3. Prepare data for CSV
+    rows = []
+    for assessment in assessments:
+        # Create a dictionary of answers for the current assessment for quick lookup
+        answer_map = {ans.question_id: ans.value for ans in assessment.answers}
+
+        row = {
+            'Assessment ID': assessment.id,
+            'Beneficiary Name': assessment.beneficiary.name,
+            'Household ID': assessment.beneficiary.household_id,
+            'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        # Populate answers for each question column
+        for q in questions:
+            row[q.text] = answer_map.get(q.id, '') # Default to empty string if no answer
+
+        rows.append(row)
+
+    # 4. Generate CSV in-memory
+    si = io.StringIO()
+    writer = csv.DictWriter(si, fieldnames=headers)
+    writer.writeheader()
+    writer.writerows(rows)
+
+    output = si.getvalue()
+
+    # 5. Return as a file download
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=4ps_assessments_report.csv"}
+    )
 
 
 # --- DB Initialization Command ---

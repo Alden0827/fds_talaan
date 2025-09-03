@@ -37,6 +37,20 @@
   </head>
   <body>
     <div class="container">
+        <nav class="d-flex justify-content-end mb-3">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">Home</a>
+            <a href="{{ url_for('results') }}" class="btn btn-outline-secondary">View Results</a>
+        </nav>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </div>
 
