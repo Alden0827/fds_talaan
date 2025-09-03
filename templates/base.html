@@ -39,7 +39,8 @@
     <div class="container">
         <nav class="d-flex justify-content-end mb-3">
             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">Home</a>
-            <a href="{{ url_for('results') }}" class="btn btn-outline-secondary">View Results</a>
+            <a href="{{ url_for('results') }}" class="btn btn-outline-secondary me-2">View Results</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
         </nav>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
