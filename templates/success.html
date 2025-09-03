@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Submission Successful{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-4">Submission Successful!</h1>
+    <p class="lead">Thank you for completing the assessment.</p>
+    <hr>
+    <p>Your data has been saved to the database.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Submit Another Assessment</a>
+</div>
+{% endblock %}
