@@ -10,66 +10,54 @@
     <h4>Information Sheet</h4>
 </header>
 
-<form action="{{ url_for('submit') }}" method="POST" class="needs-validation" novalidate>
+<form action="{{ url_for('submit') }}" method="POST">
     <section class="mb-5">
         <h3>Personal Information</h3>
         <div class="row g-3">
             <div class="col-md-6">
-                <label for="name" class="form-label required">Pangalan:</label>
+                <label for="name" class="form-label">Pangalan:</label>
                 <input type="text" class="form-control" id="name" name="name" required>
-                <div class="invalid-feedback">Pangalan ay kailangan.</div>
             </div>
             <div class="col-md-6">
-                <label for="household_id" class="form-label required">Household ID number:</label>
+                <label for="household_id" class="form-label">Household ID number:</label>
                 <input type="text" class="form-control" id="household_id" name="household_id" required>
-                <div class="invalid-feedback">Household ID number ay kailangan.</div>
-            </div>
-            <div class="col-12 col-md-4">
-                <label for="gender" class="form-label required">Kasarian:</label>
-                <select class="form-select" id="gender" name="gender" required>
-                    <option value="" disabled selected hidden>Pumili</option>
-                    <option value="Babae">Babae</option>
-                    <option value="Lalaki">Lalaki</option>
-                </select>
-                <div class="invalid-feedback">Pumili ng kasarian.</div>
             </div>
             <div class="col-md-4">
-                <label for="relationship_to_grantee" class="form-label required">Relasyon sa Grantee:</label>
-                <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee" required>
-                <div class="invalid-feedback">Relasyon sa grantee ay kailangan.</div>
+                <label for="gender" class="form-label">Kasarian:</label>
+                <input type="text" class="form-control" id="gender" name="gender">
+            </div>
+            <div class="col-md-4">
+                <label for="relationship_to_grantee" class="form-label">Relasyon sa Grantee:</label>
+                <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee">
             </div>
             <div class="col-md-4">
                 <label for="contact_number" class="form-label">Contact Number:</label>
                 <input type="text" class="form-control" id="contact_number" name="contact_number">
             </div>
             <div class="col-md-4">
-                <label for="province" class="form-label required">Province:</label>
+                <label for="province" class="form-label">Province:</label>
                 <select class="form-select" id="province" name="province" required>
-                    <option value="" disabled selected hidden>Select Province</option>
+                    <option value="">Select Province</option>
                     {% for province in provinces %}
                         <option value="{{ province }}">{{ province }}</option>
                     {% endfor %}
                 </select>
-                <div class="invalid-feedback">Pumili ng probinsya.</div>
             </div>
             <div class="col-md-4">
-                <label for="municipality" class="form-label required">Municipality:</label>
+                <label for="municipality" class="form-label">Municipality:</label>
                 <select class="form-select" id="municipality" name="municipality" required>
-                    <option value="" disabled selected hidden>Select Municipality</option>
+                    <option value="">Select Municipality</option>
                 </select>
-                <div class="invalid-feedback">Pumili ng munisipyo.</div>
             </div>
             <div class="col-md-4">
-                <label for="barangay" class="form-label required">Barangay:</label>
+                <label for="barangay" class="form-label">Barangay:</label>
                 <select class="form-select" id="barangay" name="barangay" required>
-                    <option value="" disabled selected hidden>Select Barangay</option>
+                    <option value="">Select Barangay</option>
                 </select>
-                <div class="invalid-feedback">Pumili ng barangay.</div>
             </div>
             <div class="col-md-6">
-                <label for="parent_group_name" class="form-label required">Pangalan ng Parent Group:</label>
-                <input type="text" class="form-control" id="parent_group_name" name="parent_group_name" required>
-                <div class="invalid-feedback">Pangalan ng parent group ay kailangan.</div>
+                <label for="parent_group_name" class="form-label">Pangalan ng Parent Group:</label>
+                <input type="text" class="form-control" id="parent_group_name" name="parent_group_name">
             </div>
         </div>
     </section>
@@ -84,38 +72,27 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Mga Pahayag</th>
-                        <th scope="col">Score (1-4/NA)</th>
+                        <th scope="col">Score (1-4)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for question in questions_in_section %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td><label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label></td>
+                        <td><label for="q-{{ question.id }}">{{ question.text }}</label></td>
                         <td>
-                            <div class="mb-3">
-                              <select class="form-select" id="q-{{ question.id }}" name="q-{{ question.id }}" required>
-                                <option value="" disabled selected hidden>Pumili</option>
-                                <option value="1">4 - Lubos na sumasang-ayon</option>
-                                <option value="2">3 - Sumasang-ayon</option>
-                                <option value="3">2 - Hindi Sumasang-ayon</option>
-                                <option value="4">1 - Lubos na Hindi Sumasang-ayon</option>
-                                <option value="na">N/A - Hindi angkop</option>
-                              </select>
-                              <div class="invalid-feedback">Pumili ng score.</div>
-                            </div>
+                            <input type="number" class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" min="1" max="4">
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-                {% else %}
+                {% else %} {# Narrative questions #}
                 <tbody>
                     {% for question in questions_in_section %}
                     <tr>
                         <td>
-                            <label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label>
-                            <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3" required></textarea>
-                            <div class="invalid-feedback">Sagot ay kailangan.</div>
+                            <label for="q-{{ question.id }}" class="form-label">{{ question.text }}</label>
+                            <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3"></textarea>
                         </td>
                     </tr>
                     {% endfor %}
@@ -131,15 +108,7 @@
     </div>
 </form>
 
-<style>
-    .form-label.required::after {
-        content: " *";
-        color: red;
-    }
-</style>
-
 <script>
-    // Address dropdown logic
     document.addEventListener('DOMContentLoaded', function () {
         const addressData = JSON.parse({{ address_data | tojson  }});
         const provinceSelect = document.getElementById('province');
@@ -148,8 +117,8 @@
 
         provinceSelect.addEventListener('change', function () {
             const selectedProvince = this.value;
-            municipalitySelect.innerHTML = '<option value="" disabled selected hidden>Select Municipality</option>';
-            barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
+            municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
 
             if (selectedProvince && addressData[selectedProvince]) {
                 const municipalities = Object.keys(addressData[selectedProvince]);
@@ -165,7 +134,7 @@
         municipalitySelect.addEventListener('change', function () {
             const selectedProvince = provinceSelect.value;
             const selectedMunicipality = this.value;
-            barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
 
             if (selectedProvince && selectedMunicipality && addressData[selectedProvince][selectedMunicipality]) {
                 const barangays = addressData[selectedProvince][selectedMunicipality];
@@ -178,20 +147,5 @@
             }
         });
     });
-
-    // Bootstrap validation
-    (function () {
-      'use strict'
-      var forms = document.querySelectorAll('.needs-validation')
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          form.classList.add('was-validated')
-        }, false)
-      })
-    })()
 </script>
 {% endblock %}
