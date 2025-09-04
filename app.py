@@ -7,6 +7,7 @@ from collections import defaultdict
 import csv
 import io
 from sqlalchemy.orm import joinedload
+import json
 
 # --- App Setup ---
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -24,7 +25,9 @@ class Beneficiary(db.Model):
     name = db.Column(db.String(100), nullable=False)
     gender = db.Column(db.String(50))
     relationship_to_grantee = db.Column(db.String(100))
-    address = db.Column(db.String(200))
+    province = db.Column(db.String(100))
+    municipality = db.Column(db.String(100))
+    barangay = db.Column(db.String(100))
     household_id = db.Column(db.String(100), unique=True, nullable=False)
     parent_group_name = db.Column(db.String(100))
     contact_number = db.Column(db.String(50))
@@ -58,7 +61,31 @@ def index():
     for q in questions_from_db:
         grouped_questions[q.section].append(q)
 
-    return render_template('index.html', questions=grouped_questions)
+    # Load and process address data
+    address_data = defaultdict(lambda: defaultdict(list))
+    with open('address.csv', mode='r', encoding='utf-8') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            province = row['Province Name']
+            municipality = row['City/Municipality Name']
+            barangay = row['Barangay Name']
+
+            if province and municipality and barangay:
+                address_data[province][municipality].append(barangay)
+
+    # Get unique sorted list of provinces
+    provinces = sorted(address_data.keys())
+
+    # Sort municipalities and barangays
+    for province in address_data:
+        for municipality in address_data[province]:
+            address_data[province][municipality] = sorted(list(set(address_data[province][municipality])))
+        address_data[province] = dict(sorted(address_data[province].items()))
+
+    return render_template('index.html',
+                           questions=grouped_questions,
+                           provinces=provinces,
+                           address_data=json.dumps(address_data))
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -74,7 +101,9 @@ def submit():
             name=request.form.get('name'),
             gender=request.form.get('gender'),
             relationship_to_grantee=request.form.get('relationship_to_grantee'),
-            address=request.form.get('address'),
+            province=request.form.get('province'),
+            municipality=request.form.get('municipality'),
+            barangay=request.form.get('barangay'),
             parent_group_name=request.form.get('parent_group_name'),
             contact_number=request.form.get('contact_number')
         )
