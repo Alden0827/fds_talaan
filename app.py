@@ -171,12 +171,121 @@ def dashboard():
     assessments_over_time_labels = [row[0] for row in assessments_over_time_data]
     assessments_over_time_values = [row[1] for row in assessments_over_time_data]
 
+    # Chart 3: Average score by province and section
+    avg_scores_by_province_section = db.session.query(
+        Beneficiary.province,
+        Question.section,
+        func.avg(func.cast(Answer.value, db.Float))
+    ).join(Assessment, Beneficiary.id == Assessment.beneficiary_id)\
+     .join(Answer, Assessment.id == Answer.assessment_id)\
+     .join(Question, Answer.question_id == Question.id)\
+     .filter(Question.question_type == 'rating')\
+     .group_by(Beneficiary.province, Question.section)\
+     .order_by(Beneficiary.province, Question.section)\
+     .all()
+
+    provinces = sorted(list(set([row[0] for row in avg_scores_by_province_section if row[0] is not None])))
+    sections = sorted(list(set([row[1] for row in avg_scores_by_province_section if row[1] is not None])))
+
+    data_dict = {}
+    for province, section, avg_score in avg_scores_by_province_section:
+        if province and section:
+            if province not in data_dict:
+                data_dict[province] = {}
+            data_dict[province][section] = round(avg_score, 2) if avg_score is not None else 0
+
+    datasets = []
+    # Generate a color palette for the sections
+    # Using a simple hash function to generate a color for each section
+    colors = {}
+    for i, section in enumerate(sections):
+        # Create a unique color for each section based on its name
+        # This is a simple way to generate different colors, but for a large number of sections,
+        # you might want a more sophisticated color generation scheme.
+        hash_code = hash(section)
+        r = (hash_code & 0xFF0000) >> 16
+        g = (hash_code & 0x00FF00) >> 8
+        b = hash_code & 0x0000FF
+        colors[section] = f'rgba({r}, {g}, {b}, 0.5)'
+
+
+    for section in sections:
+        dataset = {
+            'label': section,
+            'data': [data_dict.get(province, {}).get(section, 0) for province in provinces],
+            'backgroundColor': colors.get(section, 'rgba(54, 162, 235, 0.5)'), # Default color
+            'borderColor': colors.get(section, 'rgba(54, 162, 235, 1)').replace('0.5', '1'), # Default border color
+            'borderWidth': 1
+        }
+        datasets.append(dataset)
+
+    province_chart_data = {
+        'labels': provinces,
+        'datasets': datasets
+    }
+
     return render_template(
         'dashboard.html',
         avg_scores_labels=avg_scores_labels,
         avg_scores_values=avg_scores_values,
         assessments_over_time_labels=assessments_over_time_labels,
-        assessments_over_time_values=assessments_over_time_values
+        assessments_over_time_values=assessments_over_time_values,
+        province_chart_data=json.dumps(province_chart_data)
+    )
+
+@app.route('/dashboard/province/<province_name>')
+def province_dashboard(province_name):
+    # Query for municipality-level data for the given province
+    avg_scores_by_municipality = db.session.query(
+        Beneficiary.municipality,
+        Question.section,
+        func.avg(func.cast(Answer.value, db.Float))
+    ).join(Assessment, Beneficiary.id == Assessment.beneficiary_id)\
+     .join(Answer, Assessment.id == Answer.assessment_id)\
+     .join(Question, Answer.question_id == Question.id)\
+     .filter(Beneficiary.province == province_name, Question.question_type == 'rating')\
+     .group_by(Beneficiary.municipality, Question.section)\
+     .order_by(Beneficiary.municipality, Question.section)\
+     .all()
+
+    municipalities = sorted(list(set([row[0] for row in avg_scores_by_municipality if row[0] is not None])))
+    sections = sorted(list(set([row[1] for row in avg_scores_by_municipality if row[1] is not None])))
+
+    data_dict = {}
+    for municipality, section, avg_score in avg_scores_by_municipality:
+        if municipality and section:
+            if municipality not in data_dict:
+                data_dict[municipality] = {}
+            data_dict[municipality][section] = round(avg_score, 2) if avg_score is not None else 0
+
+    datasets = []
+    colors = {}
+    for i, section in enumerate(sections):
+        hash_code = hash(section)
+        r = (hash_code & 0xFF0000) >> 16
+        g = (hash_code & 0x00FF00) >> 8
+        b = hash_code & 0x0000FF
+        colors[section] = f'rgba({r}, {g}, {b}, 0.5)'
+
+    for section in sections:
+        dataset = {
+            'label': section,
+            'data': [data_dict.get(municipality, {}).get(section, 0) for municipality in municipalities],
+            'backgroundColor': colors.get(section, 'rgba(54, 162, 235, 0.5)'),
+            'borderColor': colors.get(section, 'rgba(54, 162, 235, 1)').replace('0.5', '1'),
+            'borderWidth': 1
+        }
+        datasets.append(dataset)
+
+    municipality_chart_data = {
+        'labels': municipalities,
+        'datasets': datasets
+    }
+
+    return render_template(
+        'province_dashboard.html',
+        province_name=province_name,
+        municipality_chart_data=json.dumps(municipality_chart_data)
     )
 
 @app.route('/download_csv')
