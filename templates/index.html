@@ -16,31 +16,31 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label for="name" class="form-label">Pangalan:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control  form-control-sm" id="name" name="name" required>
             </div>
             <div class="col-md-6">
                 <label for="household_id" class="form-label">Household ID number:</label>
-                <input type="text" class="form-control" id="household_id" name="household_id" required>
+                <input type="text" class="form-control  form-control-sm" id="household_id" name="household_id" required>
             </div>
             <div class="col-md-4">
                 <label for="gender" class="form-label">Kasarian:</label>
-                <input type="text" class="form-control" id="gender" name="gender">
+                <input type="text" class="form-control  form-control-sm" id="gender" name="gender">
             </div>
             <div class="col-md-4">
                 <label for="relationship_to_grantee" class="form-label">Relasyon sa Grantee:</label>
-                <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee">
+                <input type="text" class="form-control  form-control-sm" id="relationship_to_grantee" name="relationship_to_grantee">
             </div>
             <div class="col-md-4">
                 <label for="contact_number" class="form-label">Contact Number:</label>
-                <input type="text" class="form-control" id="contact_number" name="contact_number">
+                <input type="text" class="form-control  form-control-sm" id="contact_number" name="contact_number">
             </div>
             <div class="col-12">
                 <label for="address" class="form-label">Tirahan:</label>
-                <input type="text" class="form-control" id="address" name="address">
+                <input type="text" class="form-control  form-control-sm" id="address" name="address">
             </div>
             <div class="col-md-6">
                 <label for="parent_group_name" class="form-label">Pangalan ng Parent Group:</label>
-                <input type="text" class="form-control" id="parent_group_name" name="parent_group_name">
+                <input type="text" class="form-control   form-control-sm" id="parent_group_name" name="parent_group_name">
             </div>
         </div>
     </section>
@@ -64,7 +64,7 @@
                         <td>{{ loop.index }}</td>
                         <td><label for="q-{{ question.id }}">{{ question.text }}</label></td>
                         <td>
-                            <input type="number" class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" min="1" max="4">
+                            <input type="number" class="form-control form-control-sm" id="q-{{ question.id }}" name="q-{{ question.id }}" min="1" max="4">
                         </td>
                     </tr>
                     {% endfor %}
@@ -75,7 +75,7 @@
                     <tr>
                         <td>
                             <label for="q-{{ question.id }}" class="form-label">{{ question.text }}</label>
-                            <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3"></textarea>
+                            <textarea class="form-control  form-control-sm" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3"></textarea>
                         </td>
                     </tr>
                     {% endfor %}
