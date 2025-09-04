@@ -40,6 +40,21 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Average Score by Province and Section (Click a province to drill down)
+            </div>
+            <div class="card-body" style="height: 600px;">
+                <canvas id="provinceScoresChart"
+                        data-chart-data='{{ province_chart_data|safe }}'></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -97,6 +112,70 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // --- Province Scores Chart (Horizontal Grouped Bar) ---
+    const provinceScoresCanvas = document.getElementById('provinceScoresChart');
+    if (provinceScoresCanvas) {
+        try {
+            const provinceChartData = JSON.parse(provinceScoresCanvas.dataset.chartData);
+            if (provinceChartData && provinceChartData.labels && provinceChartData.labels.length > 0) {
+                new Chart(provinceScoresCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: provinceChartData,
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 4,
+                                stacked: false
+                            },
+                            y: {
+                                stacked: false,
+                                ticks: {
+                                    autoSkip: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Average Scores by Province'
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        onClick: function(event, elements) {
+                            if (elements.length > 0) {
+                                const chart = this;
+                                const elementIndex = elements[0].index;
+                                const province = chart.data.labels[elementIndex];
+                                window.location.href = '/dashboard/province/' + encodeURIComponent(province);
+                            }
+                        }
+                    }
+                });
+            } else {
+                const ctx = provinceScoresCanvas.getContext('2d');
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("No data available to display for this chart.", provinceScoresCanvas.width / 2, 50);
+            }
+        } catch (e) {
+            console.error("Error parsing province chart data:", e);
+            const ctx = provinceScoresCanvas.getContext('2d');
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Error loading chart data.", provinceScoresCanvas.width / 2, 50);
+        }
+    }
 });
 </script>
 {% endblock %}
