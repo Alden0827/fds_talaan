@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Average Score per Section
+            </div>
+            <div class="card-body">
+                <canvas id="avgScoresChart"
+                        data-labels='{{ avg_scores_labels|tojson }}'
+                        data-values='{{ avg_scores_values|tojson }}'
+                        width="100%"
+                        height="40"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-line me-1"></i>
+                Assessments Over Time
+            </div>
+            <div class="card-body">
+                <canvas id="assessmentsOverTimeChart"
+                        data-labels='{{ assessments_over_time_labels|tojson }}'
+                        data-values='{{ assessments_over_time_values|tojson }}'
+                        width="100%"
+                        height="40"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Average Score Chart (Bar) ---
+    const avgScoresCanvas = document.getElementById('avgScoresChart');
+    const avgScoresLabels = JSON.parse(avgScoresCanvas.dataset.labels);
+    const avgScoresValues = JSON.parse(avgScoresCanvas.dataset.values);
+
+    new Chart(avgScoresCanvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: avgScoresLabels,
+            datasets: [{
+                label: 'Average Score',
+                data: avgScoresValues,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 4
+                }
+            }
+        }
+    });
+
+    // --- Assessments Over Time Chart (Line) ---
+    const assessmentsTimeCanvas = document.getElementById('assessmentsOverTimeChart');
+    const assessmentsTimeLabels = JSON.parse(assessmentsTimeCanvas.dataset.labels);
+    const assessmentsTimeValues = JSON.parse(assessmentsTimeCanvas.dataset.values);
+
+    new Chart(assessmentsTimeCanvas.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: assessmentsTimeLabels,
+            datasets: [{
+                label: 'Number of Assessments',
+                data: assessmentsTimeValues,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
