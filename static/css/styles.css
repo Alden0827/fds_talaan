@@ -503,10 +503,12 @@ a:hover {
 
 /* login.html two-column layout */
 .login-container .row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
     width: 100%;
     max-width: 1200px;
-    align-items: stretch;
+    align-items: center;
 }
 
 .info-column {
@@ -569,7 +571,7 @@ a:hover {
 /* Responsive stacking for login page */
 @media (max-width: 992px) {
     .login-container .row {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
     .info-column {
         order: 2; /* show info below login on mobile */
