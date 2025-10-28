@@ -13,11 +13,13 @@
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('settings') }}">
-                    <div class="mb-3">
+                    <div class="mb-3 form-inline-group">
                         <label for="session_name" class="form-label">Session Name</label>
-                        <input type="text" class="form-control" id="session_name" name="session_name" required>
+                        <div class="inline-wrapper">
+                            <input type="text" class="form-control" id="session_name" name="session_name" required>
+                            <button type="submit" class="btn btn-primary">Create Session</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Session</button>
                 </form>
             </div>
         </div>
@@ -29,17 +31,20 @@
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('settings') }}">
-                    <div class="mb-3">
-                        <label for="active_session" class="form-label">Active Session</label>
-                        <select class="form-select" id="active_session" name="active_session">
-                            {% for session in sessions %}
-                                <option value="{{ session.id }}" {% if active_session and active_session.id == session.id %}selected{% endif %}>
-                                    {{ session.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Set Active</button>
+<div class="mb-3 form-inline-group">
+    <label for="active_session" class="form-label">Active Session</label>
+    <div class="inline-wrapper">
+        <select class="form-select" id="active_session" name="active_session">
+            {% for session in sessions %}
+                <option value="{{ session.id }}" {% if active_session and active_session.id == session.id %}selected{% endif %}>
+                    {{ session.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Set Active</button>
+    </div>
+</div>
+                        
                 </form>
             </div>
         </div>
