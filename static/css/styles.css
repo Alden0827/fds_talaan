@@ -490,3 +490,94 @@ a:hover {
         align-items: stretch;
     }
 }
+
+/* --- Login and Register Page specific styles --- */
+
+.login-container, .register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* login.html two-column layout */
+.login-container .row {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    align-items: stretch;
+}
+
+.info-column {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-content {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 15px; /* for scrollbar */
+}
+
+.info-content h2, .info-content h3, .info-content h4 {
+    text-align: center;
+}
+.info-content h3 { font-size: 1.2rem; }
+.info-content h4 { font-size: 1.1rem; }
+.info-content p, .info-content li {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.login-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-column .glass-panel {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* register.html centered layout */
+.register-panel {
+    width: 100%;
+    max-width: 700px;
+}
+
+/* Form Check (Remember Me) */
+.form-check {
+    display: flex;
+    align-items: center;
+}
+.form-check-input {
+    width: 1em;
+    height: 1em;
+    margin-right: 8px;
+}
+.form-check-label {
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+
+/* Responsive stacking for login page */
+@media (max-width: 992px) {
+    .login-container .row {
+        flex-direction: column;
+    }
+    .info-column {
+        order: 2; /* show info below login on mobile */
+    }
+    .login-column {
+        order: 1;
+    }
+    .info-content {
+        max-height: none; /* remove scroll on mobile */
+    }
+}

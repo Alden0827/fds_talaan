@@ -1,26 +1,56 @@
-{% extends "base.html" %}
+{% extends "auth_base.html" %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="glass-panel">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Login</h2>
-            <form method="POST" action="{{ url_for('login') }}">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
-            <p class="text-center mt-3">
-                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.
-            </p>
+<div class="login-container">
+    <div class="row">
+        <!-- Column 1: Informational Text -->
+        <div class="col-md-6 info-column">
+            <div class="info-content">
+                <h2>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h2>
+                <h3>Pantawid Pamilyang Pilipino Program</h3>
+                <h4>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h4>
+                <p><strong>Information Sheet</strong></p>
+                <p>Ang "Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad" ay isang beneficiary self-assessment tool na idinisenyo upang sukatin at subaybayan ang inyong pag-unlad o pagbabago sa mga partner-beneficiaries ng 4Ps.</p>
+                <p>Ito ay sistematikong pamamaraan na nagbibigay-daan upang makita ang resulta mula sa paglahok sa 4Ps. Isa rin itong kasangkapan na magsisilbing gabay sa pagpaplano at pagpapatupad ng mga programa at serbisyo tulad ng Family Development Session (FDS), para sa mga pamilyang benepisyaryo ng 4Ps.</p>
+                <p>Ang 4Ps Talaan ng Pagbabago at Pag-unlad ay nakatuon sa:</p>
+                <ul>
+                    <li><strong>Katatasan sa Programa:</strong> Pag-unawa ng mga benepisyaryo sa mga pangunahing layunin, pamantayan at kondisyon ng programa at kamalayan sa 4Ps.</li>
+                    <li><strong>Edukasyon:</strong> Kamalayan ng mga benepisyaryo sa mga kondisyon sa edukasyon, pagtiyak na ang mga bata ay regular na pumapasok sa paaralan, at pagsuporta ng mga tagapag-alaga sa edukasyon ng kanilang mga anak.</li>
+                    <li><strong>Kalusugan:</strong> Pagsubaybay sa mga kondisyon ng kalusugan at pagtiyak ng access sa mahahalagang serbisyong pangkalusugan.</li>
+                    <li><strong>Nutrisyon:</strong> Pagtataguyod ng malusog na mga gawi sa pagkain, pagpapalakas sa seguridad sa pagkain, at pagtiyak ng wastong paglaki at pag-unlad ng mga bata.</li>
+                    <li><strong>Pamamahala sa buhay pamilya:</strong> Pangkalahatang kagalingan at pamamahala ng buhay pamilya, pagtataguyod ng kabuuang pag-unlad ng pamilya at papel nito sa loob ng mas malawak na komunidad.</li>
+                    <li><strong>Kabuhayan at Kaalaman sa Pananalapi:</strong> Naglalayong suriin at pahusayin ang kaalaman sa pananalapi at kabuhayan ng mga pamilya. Ang mga pahayag na ito ay tumutukoy sa pagsubaybay at pagsulong ng mahahalagang kasanayan sa pananalapi at pag-uugali na kinakailangan para sa katatagan at paglago ng ekonomiya.</li>
+                </ul>
+                <p>Ang pagsusuri ay may dalawang bahagi. Ang unang bahagi ay pagsagot sa mga pahayag gamit ang sukat ng likert (marka mula 1-4) at ang ikalawang bahagi ay pagsisiyasat ng mga tanong sa pamamagitan ng pasalaysay na sagot.</p>
+                <p>Alinsunod sa Data Privacy Act of 2012 (R.A. 10173), tungkulin ng DSWD na protektahan ang mga datos at impormasyong inyong ibinahagi. Tinitiyak namin na hindi gagamitin ang mga impormasyong ito maliban sa layuning itinakda ng talaan na ito. Ang inyong paglagda dito ay pagbibigay pahintulot sa DSWD na gamitin ang mga datos at impormasyon na aming nakalap mula sa inyo.</p>
+            </div>
+        </div>
+
+        <!-- Column 2: Login Form -->
+        <div class="col-md-6 login-column">
+            <div class="glass-panel">
+                <h2 class="text-center mb-4">Login</h2>
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Remember Me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <p class="text-center mt-3">
+                    Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.
+                </p>
+            </div>
         </div>
     </div>
 </div>
