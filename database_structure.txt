@@ -1,0 +1,44 @@
+--
+-- File generated with SQLiteStudio v3.4.4 on Tue Oct 28 09:00:46 2025
+--
+-- Text encoding used: System
+--
+PRAGMA foreign_keys = off;
+BEGIN TRANSACTION;
+
+-- Table: answer
+CREATE TABLE IF NOT EXISTS answer (
+	id INTEGER NOT NULL, 
+	assessment_id INTEGER NOT NULL, 
+	question_id INTEGER NOT NULL, 
+	value VARCHAR(1000), 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(assessment_id) REFERENCES assessment (id), 
+	FOREIGN KEY(question_id) REFERENCES question (id)
+);
+
+-- Table: assessment
+CREATE TABLE IF NOT EXISTS assessment (
+	id INTEGER NOT NULL, 
+	beneficiary_id INTEGER NOT NULL, 
+	date_taken DATETIME DEFAULT CURRENT_TIMESTAMP, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(beneficiary_id) REFERENCES beneficiary (id)
+);
+
+-- Table: beneficiary
+CREATE TABLE IF NOT EXISTS beneficiary (id INTEGER NOT NULL, name VARCHAR (100) NOT NULL, gender VARCHAR (50), relationship_to_grantee VARCHAR (100), province VARCHAR (200), household_id VARCHAR (100) NOT NULL, parent_group_name VARCHAR (100), contact_number VARCHAR (50), barangay TEXT (50), municipality TEXT (50), PRIMARY KEY (id), UNIQUE (household_id));
+
+
+-- Table: question
+CREATE TABLE IF NOT EXISTS question (
+	id INTEGER NOT NULL, 
+	section VARCHAR(100) NOT NULL, 
+	question_type VARCHAR(50) NOT NULL, 
+	text VARCHAR(500) NOT NULL, 
+	"order" INTEGER NOT NULL, 
+	PRIMARY KEY (id)
+);
+
+COMMIT TRANSACTION;
+PRAGMA foreign_keys = on;
