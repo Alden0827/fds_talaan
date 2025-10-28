@@ -153,7 +153,7 @@
         <div class="question-grid">
             {% for question in questions_in_section %}
                 <div class="question-item">
-                    <label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label>
+                    <label for="q-{{ question.id }}" class="form-label required mb-1">{{ question.text }}</label>
                     {% if question.question_type == 'rating' %}
                         <select class="form-select" id="q-{{ question.id }}" name="q-{{ question.id }}" required>
                             <option value="" disabled selected hidden>Pumili</option>
@@ -178,6 +178,71 @@
         <button type="submit" class="btn btn-primary btn-lg">Submit Assessment</button>
     </div>
 </form>
+
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function () {
+    
+    // ===== Address dropdown logic =====
+    const addressData = {{ address_data | tojson | safe }};
+
+    const provinceSelect = document.getElementById('province');
+
+    const municipalitySelect = document.getElementById('municipality');
+    const barangaySelect = document.getElementById('barangay');
+
+    provinceSelect.addEventListener('change', function () {
+        const selectedProvince = this.value;
+        municipalitySelect.innerHTML = '<option value="" disabled selected hidden>Select Municipality</option>';
+        barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
+        console.log(addressData)
+        console.log(selectedProvince)
+        console.log(addressData[selectedProvince])
+
+
+
+        if (selectedProvince && addressData[selectedProvince]) {
+            
+            Object.keys(addressData[selectedProvince]).forEach(function (municipality) {
+                const option = document.createElement('option');
+                option.value = municipality;
+                option.textContent = municipality;
+                municipalitySelect.appendChild(option);
+
+            });
+        }
+    });
+
+    municipalitySelect.addEventListener('change', function () {
+        const selectedProvince = provinceSelect.value;
+        const selectedMunicipality = this.value;
+        barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
+
+        if (selectedProvince && selectedMunicipality && addressData[selectedProvince][selectedMunicipality]) {
+            addressData[selectedProvince][selectedMunicipality].forEach(function (barangay) {
+                const option = document.createElement('option');
+                option.value = barangay;
+                option.textContent = barangay;
+                barangaySelect.appendChild(option);
+            });
+        }
+    });
+
+    // ===== Bootstrap custom validation =====
+    (function () {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+});
+</script> -->
 
 <script>
     // Address dropdown logic
@@ -235,4 +300,5 @@
       })
     })()
 </script>
+
 {% endblock %}
