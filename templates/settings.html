@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Settings</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Create New Survey Session
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-3">
+                        <label for="session_name" class="form-label">Session Name</label>
+                        <input type="text" class="form-control" id="session_name" name="session_name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Session</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Set Active Survey Session
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-3">
+                        <label for="active_session" class="form-label">Active Session</label>
+                        <select class="form-select" id="active_session" name="active_session">
+                            {% for session in sessions %}
+                                <option value="{{ session.id }}" {% if active_session and active_session.id == session.id %}selected{% endif %}>
+                                    {{ session.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Set Active</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

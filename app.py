@@ -10,6 +10,18 @@ import csv
 import io
 from sqlalchemy.orm import joinedload
 import json
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from functools import wraps
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash("You don't have permission to access this page.", "danger")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # --- App Setup ---
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,8 +31,28 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'ap
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 # --- Database Models ---
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fullname = db.Column(db.String(150), nullable=False)
+    position = db.Column(db.String(100))
+    area_of_assignment = db.Column(db.String(150))
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    phone_number = db.Column(db.String(20))
+    is_approved = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 class Beneficiary(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +72,8 @@ class Assessment(db.Model):
     beneficiary_id = db.Column(db.Integer, db.ForeignKey('beneficiary.id'), nullable=False)
     date_taken = db.Column(db.DateTime, server_default=db.func.now())
     answers = db.relationship('Answer', backref='assessment', lazy=True, cascade="all, delete-orphan")
+    session_id = db.Column(db.Integer, db.ForeignKey('survey_session.id'), nullable=True)
+    session = db.relationship('SurveySession')
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,8 +89,121 @@ class Answer(db.Model):
     value = db.Column(db.String(1000))
     question = db.relationship('Question')
 
+class SurveySession(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    is_active = db.Column(db.Boolean, default=False)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 # --- Routes ---
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            if user.is_approved:
+                login_user(user)
+                return redirect(url_for('index'))
+            else:
+                flash('Your account is pending approval.', 'warning')
+        else:
+            flash('Invalid username or password.', 'danger')
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        user = User(
+            fullname=request.form['fullname'],
+            position=request.form['position'],
+            area_of_assignment=request.form['area_of_assignment'],
+            username=request.form['username'],
+            email=request.form['email'],
+            phone_number=request.form['phone_number']
+        )
+        user.set_password(request.form['password'])
+        db.session.add(user)
+        db.session.commit()
+        flash('Registration successful! Please wait for admin approval.', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/admin/approve_users')
+@login_required
+@admin_required
+def approve_users():
+    users_to_approve = User.query.filter_by(is_approved=False).all()
+    return render_template('approve_users.html', users=users_to_approve)
+
+@app.route('/admin/approve/<int:user_id>')
+@login_required
+@admin_required
+def approve_user(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_approved = True
+    db.session.commit()
+    flash(f'User {user.username} has been approved.', 'success')
+    return redirect(url_for('approve_users'))
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def settings():
+    if request.method == 'POST':
+        session_name = request.form.get('session_name')
+        if session_name:
+            new_session = SurveySession(name=session_name)
+            db.session.add(new_session)
+            db.session.commit()
+            flash('New survey session created.', 'success')
+
+        active_session_id = request.form.get('active_session')
+        if active_session_id:
+            SurveySession.query.update({SurveySession.is_active: False})
+            active_session = SurveySession.query.get(active_session_id)
+            if active_session:
+                active_session.is_active = True
+                db.session.commit()
+                flash('Active survey session updated.', 'success')
+
+        return redirect(url_for('settings'))
+
+    sessions = SurveySession.query.all()
+    active_session = SurveySession.query.filter_by(is_active=True).first()
+    return render_template('settings.html', sessions=sessions, active_session=active_session)
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+@login_required
+def reset_password():
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        if current_user.check_password(current_password):
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid current password.', 'danger')
+    return render_template('reset_password.html')
+
 @app.route('/')
+@login_required
 def index():
     questions_from_db = Question.query.order_by(Question.order).all()
     grouped_questions = defaultdict(list)
@@ -91,6 +238,11 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    active_session = SurveySession.query.filter_by(is_active=True).first()
+    if not active_session:
+        flash('No active survey session. Please contact an administrator.', 'danger')
+        return redirect(url_for('index'))
+
     household_id = request.form.get('household_id')
     if not household_id:
         flash('Household ID is required.', 'danger')
@@ -111,7 +263,7 @@ def submit():
         )
         db.session.add(beneficiary)
 
-    assessment = Assessment(beneficiary=beneficiary)
+    assessment = Assessment(beneficiary=beneficiary, session=active_session)
     db.session.add(assessment)
 
     for key, value in request.form.items():
@@ -468,6 +620,21 @@ def init_db_command():
     click.echo(f'Initialized the database and populated {len(questions_data)} questions.')
 
 app.cli.add_command(init_db_command)
+
+@click.command('make-admin')
+@with_appcontext
+@click.argument('username')
+def make_admin_command(username):
+    """Grant admin privileges to a user."""
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.is_admin = True
+        db.session.commit()
+        click.echo(f'User {username} is now an admin.')
+    else:
+        click.echo(f'User {username} not found.')
+
+app.cli.add_command(make_admin_command)
 
 if __name__ == '__main__':
     # app.run(debug=True)
