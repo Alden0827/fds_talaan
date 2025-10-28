@@ -1,99 +1,64 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap.min.css') }}">
-
-
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <title>{% block title %}4Ps Assessment Form{% endblock %}</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-            margin-top: 2rem;
-        }
-        .table-responsive {
-            margin-top: 1.5rem;
-        }
-        caption {
-            caption-side: top;
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #212529;
-            padding: 0.5rem 0;
-        }
-        .form-label {
-            font-weight: bold;
-        }
+</head>
+<body>
+    <div class="sidebar">
+        <a class="sidebar-brand" href="{{ url_for('index') }}">
+            <i class="fas fa-hands-helping"></i> <span>4Ps Assessment</span>
+        </a>
+        <ul class="sidebar-nav">
+            {% if current_user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('results') }}"><i class="fas fa-poll"></i> <span>View Results</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                {% if current_user.is_admin %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('approve_users') }}"><i class="fas fa-user-check"></i> <span>Manage Users</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </div>
 
-      /* Add red asterisk to required labels */
-      .form-label.required::after {
-          content: " *";
-          color: red;
-          font-weight: bold;
-      }
-
-      /* Highlight invalid required fields */
-/*      input:required:invalid,
-      select:required:invalid,
-      textarea:required:invalid {
-          border: 1px solid red;
-      }
-*/
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">4Ps Assessment</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="main-content">
+        <nav class="navbar">
+            <div class="container-fluid">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('results') }}">View Results</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                        {% if current_user.is_admin %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('approve_users') }}">Manage Users</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}">Settings</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('reset_password') }}">Reset Password</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                     {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('reset_password') }}"><i class="fas fa-key"></i> <span>Reset Password</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
                     {% endif %}
                 </ul>
             </div>
-        </div>
-    </nav>
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </div>
+        </nav>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <!-- <script src="assets/bootstrap.bundle.min.js" ></script> -->
-    <script src="{{ url_for('static', filename='assets/bootstrap.bundle.min.js') }}"></script>
-  </body>
+        <div class="container-fluid">
+             {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <div class="glass-container">
+            {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
 </html>
