@@ -7,6 +7,26 @@
     <h1>Dashboard</h1>
 </div>
 
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('dashboard') }}">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="session_id" class="form-label">Filter by Survey Session:</label>
+                    <select name="session_id" id="session_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Sessions</option>
+                        {% for session in sessions %}
+                            <option value="{{ session.id }}" {% if session.id == selected_session_id %}selected{% endif %}>
+                                {{ session.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-8">
         <div class="card mb-4">

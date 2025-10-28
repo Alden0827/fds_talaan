@@ -327,42 +327,49 @@ def results():
 
 @app.route('/dashboard')
 def dashboard():
-    # Chart 1: Average score per section
-    avg_scores_data = db.session.query(
+    sessions = SurveySession.query.order_by(SurveySession.name).all()
+    selected_session_id = request.args.get('session_id', type=int)
+
+    # Base queries
+    avg_scores_query = db.session.query(
         Question.section,
         func.avg(func.cast(Answer.value, db.Float))
     ).join(Answer, Answer.question_id == Question.id)\
-    .filter(Question.question_type == 'rating')\
-    .group_by(Question.section)\
-    .order_by(Question.section)\
-    .all()
+     .join(Assessment, Answer.assessment_id == Assessment.id)\
+     .filter(Question.question_type == 'rating')
 
-    avg_scores_labels = [row[0] for row in avg_scores_data]
-    avg_scores_values = [round(row[1], 2) if row[1] is not None else 0 for row in avg_scores_data]
-
-    # Chart 2: Assessments over time
-    assessments_over_time_data = db.session.query(
+    assessments_over_time_query = db.session.query(
         func.date(Assessment.date_taken),
         func.count(Assessment.id)
-    ).group_by(func.date(Assessment.date_taken))\
-    .order_by(func.date(Assessment.date_taken))\
-    .all()
+    )
 
-    assessments_over_time_labels = [row[0] for row in assessments_over_time_data]
-    assessments_over_time_values = [row[1] for row in assessments_over_time_data]
-
-    # Chart 3: Average score by province and section
-    avg_scores_by_province_section = db.session.query(
+    avg_scores_by_province_section_query = db.session.query(
         Beneficiary.province,
         Question.section,
         func.avg(func.cast(Answer.value, db.Float))
     ).join(Assessment, Beneficiary.id == Assessment.beneficiary_id)\
      .join(Answer, Assessment.id == Answer.assessment_id)\
      .join(Question, Answer.question_id == Question.id)\
-     .filter(Question.question_type == 'rating')\
-     .group_by(Beneficiary.province, Question.section)\
-     .order_by(Beneficiary.province, Question.section)\
-     .all()
+     .filter(Question.question_type == 'rating')
+
+    # Apply session filter if a session is selected
+    if selected_session_id:
+        avg_scores_query = avg_scores_query.filter(Assessment.session_id == selected_session_id)
+        assessments_over_time_query = assessments_over_time_query.filter(Assessment.session_id == selected_session_id)
+        avg_scores_by_province_section_query = avg_scores_by_province_section_query.filter(Assessment.session_id == selected_session_id)
+
+    # Chart 1: Average score per section
+    avg_scores_data = avg_scores_query.group_by(Question.section).order_by(Question.section).all()
+    avg_scores_labels = [row[0] for row in avg_scores_data]
+    avg_scores_values = [round(row[1], 2) if row[1] is not None else 0 for row in avg_scores_data]
+
+    # Chart 2: Assessments over time
+    assessments_over_time_data = assessments_over_time_query.group_by(func.date(Assessment.date_taken)).order_by(func.date(Assessment.date_taken)).all()
+    assessments_over_time_labels = [row[0] for row in assessments_over_time_data]
+    assessments_over_time_values = [row[1] for row in assessments_over_time_data]
+
+    # Chart 3: Average score by province and section
+    avg_scores_by_province_section = avg_scores_by_province_section_query.group_by(Beneficiary.province, Question.section).order_by(Beneficiary.province, Question.section).all()
 
     provinces = sorted(list(set([row[0] for row in avg_scores_by_province_section if row[0] is not None])))
     sections = sorted(list(set([row[1] for row in avg_scores_by_province_section if row[1] is not None])))
@@ -406,6 +413,8 @@ def dashboard():
 
     return render_template(
         'dashboard.html',
+        sessions=sessions,
+        selected_session_id=selected_session_id,
         avg_scores_labels=avg_scores_labels,
         avg_scores_values=avg_scores_values,
         assessments_over_time_labels=assessments_over_time_labels,
