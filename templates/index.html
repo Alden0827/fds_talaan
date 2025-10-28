@@ -83,22 +83,21 @@
     </ul>
 </section>
 
-
 <form action="{{ url_for('submit') }}" method="POST" class="needs-validation" novalidate>
-    <section class="mb-5">
+    <section class="glass-panel mb-4">
         <h3>Personal Information</h3>
-        <div class="row g-3">
-            <div class="col-md-6">
+        <div class="question-grid">
+            <div class="question-item">
                 <label for="name" class="form-label required">Pangalan:</label>
                 <input type="text" class="form-control" id="name" name="name" required>
                 <div class="invalid-feedback">Pangalan ay kailangan.</div>
             </div>
-            <div class="col-md-6">
+            <div class="question-item">
                 <label for="household_id" class="form-label required">Household ID number:</label>
                 <input type="text" class="form-control" id="household_id" name="household_id" required>
                 <div class="invalid-feedback">Household ID number ay kailangan.</div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="question-item">
                 <label for="gender" class="form-label required">Kasarian:</label>
                 <select class="form-select" id="gender" name="gender" required>
                     <option value="" disabled selected hidden>Pumili</option>
@@ -107,16 +106,16 @@
                 </select>
                 <div class="invalid-feedback">Pumili ng kasarian.</div>
             </div>
-            <div class="col-md-4">
+            <div class="question-item">
                 <label for="relationship_to_grantee" class="form-label required">Relasyon sa Grantee:</label>
                 <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee" required>
                 <div class="invalid-feedback">Relasyon sa grantee ay kailangan.</div>
             </div>
-            <div class="col-md-4">
+            <div class="question-item">
                 <label for="contact_number" class="form-label">Contact Number:</label>
                 <input type="text" class="form-control" id="contact_number" name="contact_number">
             </div>
-            <div class="col-md-4">
+            <div class="question-item">
                 <label for="province" class="form-label required">Province:</label>
                 <select class="form-select" id="province" name="province" required>
                     <option value="" disabled selected hidden>Select Province</option>
@@ -126,21 +125,21 @@
                 </select>
                 <div class="invalid-feedback">Pumili ng probinsya.</div>
             </div>
-            <div class="col-md-4">
+            <div class="question-item">
                 <label for="municipality" class="form-label required">Municipality:</label>
                 <select class="form-select" id="municipality" name="municipality" required>
                     <option value="" disabled selected hidden>Select Municipality</option>
                 </select>
                 <div class="invalid-feedback">Pumili ng munisipyo.</div>
             </div>
-            <div class="col-md-4">
+            <div class="question-item">
                 <label for="barangay" class="form-label required">Barangay:</label>
                 <select class="form-select" id="barangay" name="barangay" required>
                     <option value="" disabled selected hidden>Select Barangay</option>
                 </select>
                 <div class="invalid-feedback">Pumili ng barangay.</div>
             </div>
-            <div class="col-md-6">
+            <div class="question-item">
                 <label for="parent_group_name" class="form-label required">Pangalan ng Parent Group:</label>
                 <input type="text" class="form-control" id="parent_group_name" name="parent_group_name" required>
                 <div class="invalid-feedback">Pangalan ng parent group ay kailangan.</div>
@@ -149,53 +148,28 @@
     </section>
 
     {% for section_name, questions_in_section in questions.items() %}
-    <section class="mb-5">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <caption>{{ section_name }}</caption>
-                {% if questions_in_section[0].question_type == 'rating' %}
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Mga Pahayag</th>
-                        <th scope="col">Score <br>(1-4/NA)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for question in questions_in_section %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td><label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label></td>
-                        <td>
-                            <div class="mb-3">
-                              <select class="form-select" id="q-{{ question.id }}" name="q-{{ question.id }}" required>
-                                <option value="" disabled selected hidden>Pumili</option>
-                                <option value="1">4 - Lubos na sumasang-ayon</option>
-                                <option value="2">3 - Sumasang-ayon</option>
-                                <option value="3">2 - Hindi Sumasang-ayon</option>
-                                <option value="4">1 - Lubos na Hindi Sumasang-ayon</option>
-                                <option value="na">N/A - Hindi angkop</option>
-                              </select>
-                              <div class="invalid-feedback">Pumili ng score.</div>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% else %}
-                <tbody>
-                    {% for question in questions_in_section %}
-                    <tr>
-                        <td>
-                            <label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label>
-                            <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3" required></textarea>
-                            <div class="invalid-feedback">Sagot ay kailangan.</div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                {% endif %}
-            </table>
+    <section class="glass-panel mb-4">
+        <h3>{{ section_name }}</h3>
+        <div class="question-grid">
+            {% for question in questions_in_section %}
+                <div class="question-item">
+                    <label for="q-{{ question.id }}" class="form-label required">{{ question.text }}</label>
+                    {% if question.question_type == 'rating' %}
+                        <select class="form-select" id="q-{{ question.id }}" name="q-{{ question.id }}" required>
+                            <option value="" disabled selected hidden>Pumili</option>
+                            <option value="4">4 - Lubos na sumasang-ayon</option>
+                            <option value="3">3 - Sumasang-ayon</option>
+                            <option value="2">2 - Hindi Sumasang-ayon</option>
+                            <option value="1">1 - Lubos na Hindi Sumasang-ayon</option>
+                            <option value="na">N/A - Hindi angkop</option>
+                        </select>
+                        <div class="invalid-feedback">Pumili ng score.</div>
+                    {% else %}
+                        <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3" required></textarea>
+                        <div class="invalid-feedback">Sagot ay kailangan.</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
     </section>
     {% endfor %}
@@ -204,13 +178,6 @@
         <button type="submit" class="btn btn-primary btn-lg">Submit Assessment</button>
     </div>
 </form>
-
-<style>
-    .form-label.required::after {
-        content: " *";
-        color: red;
-    }
-</style>
 
 <script>
     // Address dropdown logic
