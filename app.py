@@ -122,6 +122,13 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('register'))
+
         user = User(
             fullname=request.form['fullname'],
             position=request.form['position'],
@@ -130,7 +137,7 @@ def register():
             email=request.form['email'],
             phone_number=request.form['phone_number']
         )
-        user.set_password(request.form['password'])
+        user.set_password(password)
         db.session.add(user)
         db.session.commit()
         flash('Registration successful! Please wait for admin approval.', 'success')
@@ -147,8 +154,16 @@ def logout():
 @login_required
 @admin_required
 def approve_users():
-    users_to_approve = User.query.filter_by(is_approved=False).all()
-    return render_template('approve_users.html', users=users_to_approve)
+    search_query = request.args.get('search', '')
+    if search_query:
+        users = User.query.filter(
+            User.fullname.contains(search_query) |
+            User.username.contains(search_query) |
+            User.email.contains(search_query)
+        ).all()
+    else:
+        users = User.query.all()
+    return render_template('approve_users.html', users=users, search_query=search_query)
 
 @app.route('/admin/approve/<int:user_id>')
 @login_required
@@ -158,6 +173,19 @@ def approve_user(user_id):
     user.is_approved = True
     db.session.commit()
     flash(f'User {user.username} has been approved.', 'success')
+    return redirect(url_for('approve_users'))
+
+@app.route('/admin/reset_password/<int:user_id>')
+@login_required
+@admin_required
+def admin_reset_password(user_id):
+    user = User.query.get_or_404(user_id)
+    # For simplicity, resetting to a default password.
+    # In a real-world scenario, you might generate a random password
+    # and email it to the user.
+    user.set_password('password')
+    db.session.commit()
+    flash(f'Password for {user.username} has been reset to "password".', 'success')
     return redirect(url_for('approve_users'))
 
 @app.route('/settings', methods=['GET', 'POST'])
