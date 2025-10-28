@@ -7,6 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/glass.css') }}">
 
 
     <title>{% block title %}4Ps Assessment Form{% endblock %}</title>
@@ -51,8 +52,8 @@
 */
     </style>
   </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <body style="background-image: url('{{ url_for('static', filename='assets/background.jpg') }}'); background-size: cover;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light glass">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">4Ps Assessment</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +79,7 @@
             </div>
         </div>
     </nav>
-    <div class="container">
+    <div class="container glass">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
