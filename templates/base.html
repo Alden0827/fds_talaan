@@ -52,23 +52,33 @@
     </style>
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">4Ps Assessment</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('results') }}">View Results</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        {% if current_user.is_admin %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('approve_users') }}">Manage Users</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}">Settings</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('reset_password') }}">Reset Password</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container">
-        <nav class="d-flex justify-content-end mb-3">
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">Home</a>
-                <a href="{{ url_for('results') }}" class="btn btn-outline-secondary me-2">View Results</a>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-2">Dashboard</a>
-                {% if current_user.is_admin %}
-                    <a href="{{ url_for('approve_users') }}" class="btn btn-outline-info me-2">Approve Users</a>
-                    <a href="{{ url_for('settings') }}" class="btn btn-outline-secondary me-2">Settings</a>
-                {% endif %}
-                <a href="{{ url_for('reset_password') }}" class="btn btn-outline-warning me-2">Reset Password</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}" class="btn btn-outline-primary me-2">Login</a>
-                <a href="{{ url_for('register') }}" class="btn btn-outline-success">Register</a>
-            {% endif %}
-        </nav>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
