@@ -1,0 +1,53 @@
+.alert {
+  position: relative;
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  margin: 1rem 0;
+  /*backdrop-filter: blur(12px);*/
+  /*-webkit-backdrop-filter: blur(12px);*/
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Glassmorphic yellow warning */
+.alert-warning {
+  background: rgba(255, 193, 7, 1);
+  border-left: 5px solid rgba(255, 193, 7, 0.8);
+  color: #664d03;
+}
+
+/* Fade and show animation */
+.alert.fade {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+.alert.show {
+  opacity: 1;
+}
+
+/* Close button style */
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+.btn-close:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.alert-success {
+  background: rgba(25, 135, 84, 1);
+  border-left: 5px solid rgba(25, 135, 84, 1);
+  color: #000000;
+}

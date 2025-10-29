@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alerts.css') }}">
+
     <title>{% block title %}Talaan ng Pagbabago at Pag Unlad Form{% endblock %}</title>
 </head>
 <body>
@@ -25,7 +28,11 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('approve_users') }}"><i class="fas fa-user-check"></i> <span>Manage Users</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 {% endif %}
+            {% else %}
+
+                aasdasdasdasd
             {% endif %}
+
         </ul>
     </div>
 
@@ -34,8 +41,8 @@
             <!-- <div class="container-fluid"> -->
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                      {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('reset_password') }}"><i class="fas fa-key"></i> <span>Reset Password</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('reset_password') }}"><i class="fas fa-key"></i> <span></span></a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span></span></a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
@@ -43,8 +50,6 @@
                 </ul>
             <!-- </div> -->
         </nav>
-
-
 
         <!-- <div class="container-fluid"> -->
              {% with messages = get_flashed_messages(with_categories=true) %}
@@ -58,7 +63,7 @@
                 {% endif %}
             {% endwith %}
             <div class="glass-container">
-            {% block content %}{% endblock %}
+                {% block content %}{% endblock %}
             </div>
         <!-- </div> -->
     </div>

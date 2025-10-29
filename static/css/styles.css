@@ -1,13 +1,17 @@
 /* static/css/styles.css */
 body {
-    background-image: url('https://i0.wp.com/picjumbo.com/wp-content/uploads/green-natural-background-with-wooden-surface-free-image.jpeg?w=2210&quality=70');
+    /*background-image: url('https://i0.wp.com/picjumbo.com/wp-content/uploads/green-natural-background-with-wooden-surface-free-image.jpeg?w=2210&quality=70');*/
+    /*background-image: url('https://www.childhealthindicatorsbc.ca/sites/default/files/inline-images/family%20module%20graphic.png');*/
+    background-image: url('../images/bg.png');
+
     background-size: cover;
-    background-position: center;
+    /*background-position: center;*/
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-family: sans-serif;
     margin: 0;
     padding: 0; /* ✅ make sure there's no padding */
+    background-size: 100% 100%;
 }
 
 .glass-container {
@@ -136,6 +140,23 @@ body {
     padding: 20px;
     margin-bottom: 20px;
 }
+
+.glass-panel-0 {
+
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    background: rgba(255, 255, 255, 0.1); /* darker glass effect */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px; /* slightly stronger shadow */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* optional border for contrast */
+
+}
+
+
 .question-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* slightly smaller min width */
@@ -243,48 +264,6 @@ a:hover {
     padding: 8px 12px; 
 }
 
-
-/* Table Styling */
-
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
-    border-radius: 10px; /* keep rounded edges */
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px; /* optional: prevent columns from becoming too narrow */
-}
-
-/*.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-*/
-.table th, .table td {
-    padding: 12px 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    text-align: left;
-}
-
-.table thead th {
-    background-color: rgba(255, 255, 255, 0.2);
-    font-weight: bold;
-}
-
-.table tbody tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-
 /* Dashboard and Chart Styling */
 .card {
     background: rgba(255, 255, 255, 0.1);
@@ -315,18 +294,12 @@ a:hover {
 .glass-panel,
 .card {
 
-    background: rgba(0, 0, 0, 0.5); /* darker glass effect */
+    background: rgba(0, 0, 0, 0.7); /* darker glass effect */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 15px; /* slightly stronger shadow */
     border: 1px solid rgba(255, 255, 255, 0.2); /* optional border for contrast */
 
-
-
-
-
-
-/*adasdasdas*/
 
 /* === Form Validation Feedback (Error Highlighting) === */
 /* === Form Validation Feedback (Glass Style with Hidden Errors) === */
@@ -488,98 +461,5 @@ a:hover {
     .inline-wrapper {
         flex-direction: column;
         align-items: stretch;
-    }
-}
-
-/* --- Login and Register Page specific styles --- */
-
-.login-container, .register-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-/* login.html two-column layout */
-.login-container .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
-    align-items: center;
-}
-
-.info-column {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.info-content {
-    max-height: 80vh;
-    overflow-y: auto;
-    padding-right: 15px; /* for scrollbar */
-}
-
-.info-content h2, .info-content h3, .info-content h4 {
-    text-align: center;
-}
-.info-content h3 { font-size: 1.2rem; }
-.info-content h4 { font-size: 1.1rem; }
-.info-content p, .info-content li {
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-.login-column {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.login-column .glass-panel {
-    width: 100%;
-    max-width: 400px;
-}
-
-/* register.html centered layout */
-.register-panel {
-    width: 100%;
-    max-width: 700px;
-}
-
-/* Form Check (Remember Me) */
-.form-check {
-    display: flex;
-    align-items: center;
-}
-.form-check-input {
-    width: 1em;
-    height: 1em;
-    margin-right: 8px;
-}
-.form-check-label {
-    color: #fff;
-    font-size: 0.9rem;
-}
-
-
-/* Responsive stacking for login page */
-@media (max-width: 992px) {
-    .login-container .row {
-        grid-template-columns: 1fr;
-    }
-    .info-column {
-        order: 2; /* show info below login on mobile */
-    }
-    .login-column {
-        order: 1;
-    }
-    .info-content {
-        max-height: none; /* remove scroll on mobile */
     }
 }

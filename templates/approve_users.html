@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             {% for user in users %}
-            <tr {% if user.is_approved %}style="background-color: #d4edda;"{% endif %}>
+            <tr {% if user.is_approved %}style="background-color: #;"{% endif %}>
                 <td>{{ user.fullname }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>

@@ -1,61 +1,158 @@
+
+
+
+
+
+
+
+
+
+
 {% extends "auth_base.html" %}
 
-{% block title %}Register{% endblock %}
+{% block title %}User Registration{% endblock %}
 
 {% block content %}
-<div class="register-container">
-    <div class="glass-panel register-panel">
-        <h2 class="text-center mb-4">Register</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<style>
+
+/* main-content overide */
+.main-content {
+    margin-left: 0px;
+    padding: 0px;
+}
+
+</style>
+
+<div class="glass-panel" style="
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Info column wider, login column narrower */
+    gap: 30px;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 50px auto;
+    min-height: 70vh;
+    align-items: start;
+">
+
+    <!-- Column 1: Informational Text -->
+    <div class="info-column" style="overflow-y: auto; max-height: 70vh;">
+                <h2>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h2>
+                <h3>Pantawid Pamilyang Pilipino Program</h3>
+                <h4>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h4>
+                <p><strong>Information Sheet</strong></p>
+                <p>Ang "Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad" ay isang beneficiary self-assessment tool na idinisenyo upang sukatin at subaybayan ang inyong pag-unlad o pagbabago sa mga partner-beneficiaries ng 4Ps.</p>
+                <p>Ito ay sistematikong pamamaraan na nagbibigay-daan upang makita ang resulta mula sa paglahok sa 4Ps. Isa rin itong kasangkapan na magsisilbing gabay sa pagpaplano at pagpapatupad ng mga programa at serbisyo tulad ng Family Development Session (FDS), para sa mga pamilyang benepisyaryo ng 4Ps.</p>
+                <p>Ang 4Ps Talaan ng Pagbabago at Pag-unlad ay nakatuon sa:</p>
+                <ul>
+                    <li><strong>Katatasan sa Programa:</strong> Pag-unawa ng mga benepisyaryo sa mga pangunahing layunin, pamantayan at kondisyon ng programa at kamalayan sa 4Ps.</li>
+                    <li><strong>Edukasyon:</strong> Kamalayan ng mga benepisyaryo sa mga kondisyon sa edukasyon, pagtiyak na ang mga bata ay regular na pumapasok sa paaralan, at pagsuporta ng mga tagapag-alaga sa edukasyon ng kanilang mga anak.</li>
+                    <li><strong>Kalusugan:</strong> Pagsubaybay sa mga kondisyon ng kalusugan at pagtiyak ng access sa mahahalagang serbisyong pangkalusugan.</li>
+                    <li><strong>Nutrisyon:</strong> Pagtataguyod ng malusog na mga gawi sa pagkain, pagpapalakas sa seguridad sa pagkain, at pagtiyak ng wastong paglaki at pag-unlad ng mga bata.</li>
+                    <li><strong>Pamamahala sa buhay pamilya:</strong> Pangkalahatang kagalingan at pamamahala ng buhay pamilya, pagtataguyod ng kabuuang pag-unlad ng pamilya at papel nito sa loob ng mas malawak na komunidad.</li>
+                    <li><strong>Kabuhayan at Kaalaman sa Pananalapi:</strong> Naglalayong suriin at pahusayin ang kaalaman sa pananalapi at kabuhayan ng mga pamilya. Ang mga pahayag na ito ay tumutukoy sa pagsubaybay at pagsulong ng mahahalagang kasanayan sa pananalapi at pag-uugali na kinakailangan para sa katatagan at paglago ng ekonomiya.</li>
+                </ul>
+                <p>Ang pagsusuri ay may dalawang bahagi. Ang unang bahagi ay pagsagot sa mga pahayag gamit ang sukat ng likert (marka mula 1-4) at ang ikalawang bahagi ay pagsisiyasat ng mga tanong sa pamamagitan ng pasalaysay na sagot.</p>
+                <p>Alinsunod sa Data Privacy Act of 2012 (R.A. 10173), tungkulin ng DSWD na protektahan ang mga datos at impormasyong inyong ibinahagi. Tinitiyak namin na hindi gagamitin ang mga impormasyong ito maliban sa layuning itinakda ng talaan na ito. Ang inyong paglagda dito ay pagbibigay pahintulot sa DSWD na gamitin ang mga datos at impormasyon na aming nakalap mula sa inyo.</p>
+
+    </div>
+
+    <!-- Column 2: Login Form -->
+    <div class="login-column">
+
         <form method="POST" action="{{ url_for('register') }}">
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            
+            <!-- Grid container for paired fields -->
+            <div class="question-item mb-3">
                     <label for="fullname" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="fullname" name="fullname" required>
-                </div>
-                <div class="col-md-6 mb-3">
+            </div>
+            <div class="question-item mb-3">
                     <label for="position" class="form-label">Position</label>
                     <input type="text" class="form-control" id="position" name="position">
-                </div>
             </div>
 
-            <div class="mb-3">
+
+            <div class="question-item mb-3">
                 <label for="area_of_assignment" class="form-label">Area of Assignment</label>
-                <input type="text" class="form-control" id="area_of_assignment" name="area_of_assignment">
+                <input type="text"  class="form-control" id="area_of_assignment" name="area_of_assignment">                
             </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="question-item mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="col-md-6 mb-3">
+                    <input type="text"  class="form-control" id="username" name="username" required>                
+            </div>
+            <div class="question-item mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
+                    <input type="password"  class="form-control" id="password" name="password" required>                
             </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="question-item mb-3">
                     <label for="confirm_password" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                </div>
-                <div class="col-md-6 mb-3">
+                    <input type="password"  class="form-control" id="confirm_password" name="confirm_password" required>                
+            </div>
+            <div class="question-item mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email"  class="form-control" id="email" name="email" required>                
+            </div>
+            <div class="question-item mb-3">
+                <label for="phone_number" class="form-label">Phone Number</label>
+                <input type="tel"  class="form-control" id="phone_number" name="phone_number">                
+            </div>
+            <div class="mb-3">
+            <button type="submit" class="btn w-100 mt-2">Register</button>
+            </div>
+            <div class="mb-3">
+                Already have an account? <a href="{{ url_for('login') }}">Login here</a>.
+            </div>
+
+<!-- 
+            <div class="form-item">
+
+            </div>
+
+            <div class="form-grid">
+                <div class="form-item">
+
+                </div>
+                <div class="form-item">
+
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label for="phone_number" class="form-label">Phone Number</label>
-                <input type="tel" class="form-control" id="phone_number" name="phone_number">
+            <div class="form-grid">
+                <div class="form-item">
+
+                </div>
+                <div class="form-item">
+
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
+            <div class="form-item">
+
+            </div>
+
+             -->
         </form>
 
+
+
+<!-- 
         <p class="text-center mt-3">
-            Already have an account? <a href="{{ url_for('login') }}">Login here</a>.
+            
         </p>
+ -->
     </div>
 </div>
+
+<!-- Responsive adjustments -->
+<style>
+@media (max-width: 900px) {
+    .glass-panel {
+        grid-template-columns: 1fr; 
+    }
+    .info-column, .login-column {
+        max-width: 100%;
+    }
+}
+</style>
 {% endblock %}

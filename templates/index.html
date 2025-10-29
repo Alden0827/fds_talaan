@@ -84,7 +84,7 @@
 </section>
 
 <form action="{{ url_for('submit') }}" method="POST" class="needs-validation" novalidate>
-    <section class="glass-panel mb-4">
+    <section class="glass-panel-0 mb-4">
         <h3>Personal Information</h3>
         <div class="question-grid">
             <div class="question-item">
@@ -148,7 +148,7 @@
     </section>
 
     {% for section_name, questions_in_section in questions.items() %}
-    <section class="glass-panel mb-4">
+    <section class="glass-panel-0 mb-4">
         <h3>{{ section_name }}</h3>
         <div class="question-grid">
             {% for question in questions_in_section %}

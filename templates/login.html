@@ -3,11 +3,33 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="login-container">
-    <div class="row">
-        <!-- Column 1: Informational Text -->
-        <div class="col-md-6 info-column">
-            <div class="info-content">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alerts.css') }}">
+
+<style>
+/* main-content overide */
+.main-content {
+    margin-left: 0px;
+    padding: 0px;
+}
+</style>
+
+<div class="glass-panel" style="
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Info column wider, login column narrower */
+    gap: 30px;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 50px auto;
+    min-height: 70vh;
+    align-items: start;
+
+
+
+">
+
+    <!-- Column 1: Informational Text -->
+    <div class="info-column" style="overflow-y: auto; max-height: 70vh;">
                 <h2>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h2>
                 <h3>Pantawid Pamilyang Pilipino Program</h3>
                 <h4>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h4>
@@ -25,33 +47,45 @@
                 </ul>
                 <p>Ang pagsusuri ay may dalawang bahagi. Ang unang bahagi ay pagsagot sa mga pahayag gamit ang sukat ng likert (marka mula 1-4) at ang ikalawang bahagi ay pagsisiyasat ng mga tanong sa pamamagitan ng pasalaysay na sagot.</p>
                 <p>Alinsunod sa Data Privacy Act of 2012 (R.A. 10173), tungkulin ng DSWD na protektahan ang mga datos at impormasyong inyong ibinahagi. Tinitiyak namin na hindi gagamitin ang mga impormasyong ito maliban sa layuning itinakda ng talaan na ito. Ang inyong paglagda dito ay pagbibigay pahintulot sa DSWD na gamitin ang mga datos at impormasyon na aming nakalap mula sa inyo.</p>
-            </div>
-        </div>
 
-        <!-- Column 2: Login Form -->
-        <div class="col-md-6 login-column">
-            <div class="glass-panel">
-                <h2 class="text-center mb-4">Login</h2>
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">Remember Me</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
-                <p class="text-center mt-3">
-                    Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.
-                </p>
-            </div>
-        </div>
     </div>
+
+    <!-- Column 2: Login Form -->
+    <div class="login-column">
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="question-item  mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="question-item mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="remember">
+                <label class="form-check-label" for="remember">Remember Me</label>
+            </div>
+            <div class="question-item mb-3">
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </div>
+            <div class="question-item mb-3">
+                 Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.
+            </div>
+
+        </form>
+    </div>
+
 </div>
+
+<!-- Responsive adjustments -->
+<style>
+@media (max-width: 900px) {
+    .glass-panel {
+        grid-template-columns: 1fr; 
+    }
+    .info-column, .login-column {
+        max-width: 100%;
+    }
+}
+</style>
 {% endblock %}
