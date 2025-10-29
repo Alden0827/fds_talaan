@@ -23,9 +23,6 @@
     margin: 50px auto;
     min-height: 70vh;
     align-items: start;
-
-
-
 ">
 
     <!-- Column 1: Informational Text -->
@@ -68,13 +65,17 @@
             <div class="question-item mb-3">
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </div>
-            <div class="question-item mb-3">
-                 Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.
+            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+              <i class="fas fa-info-circle me-2"></i>
+              <div class="alert-text">
+                <strong>Notice:</strong> For your convenience, you no longer need to register an account. 
+                Please use your <strong>Active Directory (AD)</strong> account to log in — 
+                the same account you use to access <strong>GlobalProtect VPN</strong>.
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-
         </form>
     </div>
-
 </div>
 
 <!-- Responsive adjustments -->

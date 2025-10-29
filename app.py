@@ -71,6 +71,7 @@ class Assessment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beneficiary_id = db.Column(db.Integer, db.ForeignKey('beneficiary.id'), nullable=False)
     date_taken = db.Column(db.DateTime, server_default=db.func.now())
+    username = db.Column(db.String(100))
     answers = db.relationship('Answer', backref='assessment', lazy=True, cascade="all, delete-orphan")
     session_id = db.Column(db.Integer, db.ForeignKey('survey_session.id'), nullable=True)
     session = db.relationship('SurveySession')
@@ -99,50 +100,226 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # --- Routes ---
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index'))
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         user = User.query.filter_by(username=username).first()
+#         if user and user.check_password(password):
+#             if user.is_approved:
+#                 login_user(user)
+#                 return redirect(url_for('index'))
+#             else:
+#                 flash('Your account is pending approval.', 'warning')
+#         else:
+#             flash('Invalid username or password.', 'danger')
+#     return render_template('login.html')
+
+# from flask import render_template, request, redirect, url_for, flash
+# from flask_login import login_user, current_user
+from ldap3 import Server, Connection, ALL
+import psycopg2
+from psycopg2.extras import RealDictCursor
+# from werkzeug.security import check_password_hash, generate_password_hash
+# from models import User, db  # assuming your SQLAlchemy models are here
+# --- Database connection config ---
+# --- DB Connection Helper ---
+def get_db_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="db_dms",
+        user="postgres",
+        password="root",
+        cursor_factory=psycopg2.extras.RealDictCursor  # <-- lets you access rows like dicts
+    )
+
+class SimpleUser(UserMixin):
+    def __init__(self, user_dict):
+        self.id = user_dict.get("user_id")
+        self.username = user_dict.get("username")
+        self.firstname = user_dict.get("firstname")
+        self.middlename = user_dict.get("middlename")
+        self.lastname = user_dict.get("lastname")
+        self.email = user_dict.get("email")
+        self.contact = user_dict.get("contact")
+        self.group_id = user_dict.get("group_id")
+        self.status = user_dict.get("status")
+        self.is_approved = user_dict.get("is_approved", True)
+        self.password = user_dict.get("password")
+
+    def get_id(self):
+        # Flask-Login uses this for session tracking
+        return str(self.id)
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM tbl_users WHERE user_id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if user:
+        return SimpleUser(user)
+    return None
+
+from flask import jsonify
+@app.route('/whoami')
+@login_required
+def whoami():
+    return jsonify({
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email,
+        "is_approved": current_user.is_approved
+    })
+
+# --- LOGIN ROUTE ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            if user.is_approved:
-                login_user(user)
-                return redirect(url_for('index'))
-            else:
-                flash('Your account is pending approval.', 'warning')
-        else:
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)  # ensures dict results
+
+        # --- LOCAL AUTH ---
+        cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
+        user = cur.fetchone()
+
+        if user:
+            stored_hash = user.get('password', '')
+            is_valid = False
+
+            if stored_hash.startswith('pbkdf2:'):
+                is_valid = check_password_hash(stored_hash, password)
+            elif stored_hash == password:  # plaintext fallback
+                is_valid = True
+                new_hash = generate_password_hash(password)
+                cur.execute("UPDATE tbl_users SET password=%s WHERE username=%s", (new_hash, username))
+                conn.commit()
+
+            if is_valid:
+                if user.get('is_approved', True):
+                    # re-fetch latest version so current_user is up-to-date
+                    cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
+                    updated_user = cur.fetchone()
+
+                    login_user(SimpleUser(updated_user))
+                    flash('Login successful (local authentication).', 'success')
+
+                    cur.close()
+                    conn.close()
+                    return redirect(url_for('index'))
+                else:
+                    flash('Your account is pending approval.', 'warning')
+                    cur.close()
+                    conn.close()
+                    return redirect(url_for('login'))
+
+        # --- LDAP AUTH ---
+        ad_server = "ldap://ENTDSWD.LOCAL"
+        domain = "ENTDSWD"
+        server = Server(ad_server, get_info=ALL)
+        user_dn = f"{domain}\\{username}"
+        ldap_conn = Connection(server, user=user_dn, password=password, auto_bind=False)
+
+        if not ldap_conn.bind():
             flash('Invalid username or password.', 'danger')
+            cur.close()
+            conn.close()
+            return redirect(url_for('login'))
+
+        # Search user details in AD
+        ldap_conn.search(
+            search_base="DC=ENTDSWD,DC=LOCAL",
+            search_filter=f"(sAMAccountName={username})",
+            attributes=["givenName", "initials", "sn", "mail", "mobile"]
+        )
+
+        if not ldap_conn.entries:
+            flash('LDAP account not found.', 'danger')
+            cur.close()
+            conn.close()
+            return redirect(url_for('login'))
+
+        entry = ldap_conn.entries[0]
+        firstname = str(entry.givenName) if 'givenName' in entry else ''
+        middlename = str(entry.initials) if 'initials' in entry else ''
+        lastname = str(entry.sn) if 'sn' in entry else ''
+        email = str(entry.mail) if 'mail' in entry else ''
+        contact = str(entry.mobile) if 'mobile' in entry else ''
+
+        # --- UPSERT USER ---
+        cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
+        existing_user = cur.fetchone()
+
+        if existing_user:
+            cur.execute("""
+                UPDATE tbl_users
+                SET firstname=%s, middlename=%s, lastname=%s, email=%s,
+                    contact=%s, password=%s
+                WHERE username=%s
+                RETURNING *;
+            """, (firstname, middlename, lastname, email, contact,
+                  generate_password_hash(password), username))
+            updated_user = cur.fetchone()
+        else:
+            cur.execute("""
+                INSERT INTO tbl_users (username, firstname, middlename, lastname, email, contact, group_id, status, is_approved, password)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                RETURNING *;
+            """, (username, firstname, middlename, lastname, email, contact,
+                  8, 'Active', True, generate_password_hash(password)))
+            updated_user = cur.fetchone()
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        ldap_conn.unbind()
+
+        # --- LOGIN with up-to-date user ---
+        login_user(SimpleUser(updated_user))
+        flash('Login successful (LDAP authentication).', 'success')
+        return redirect(url_for('index'))
+
     return render_template('login.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
+# ------------------------------
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index'))
+#     if request.method == 'POST':
+#         password = request.form['password']
+#         confirm_password = request.form['confirm_password']
 
-        if password != confirm_password:
-            flash('Passwords do not match.', 'danger')
-            return redirect(url_for('register'))
+#         if password != confirm_password:
+#             flash('Passwords do not match.', 'danger')
+#             return redirect(url_for('register'))
 
-        user = User(
-            fullname=request.form['fullname'],
-            position=request.form['position'],
-            area_of_assignment=request.form['area_of_assignment'],
-            username=request.form['username'],
-            email=request.form['email'],
-            phone_number=request.form['phone_number']
-        )
-        user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful! Please wait for admin approval.', 'success')
-        return redirect(url_for('login'))
-    return render_template('register.html')
+#         user = User(
+#             fullname=request.form['fullname'],
+#             position=request.form['position'],
+#             area_of_assignment=request.form['area_of_assignment'],
+#             username=request.form['username'],
+#             email=request.form['email'],
+#             phone_number=request.form['phone_number']
+#         )
+#         user.set_password(password)
+#         db.session.add(user)
+#         db.session.commit()
+#         flash('Registration successful! Please wait for admin approval.', 'success')
+#         return redirect(url_for('login'))
+#     return render_template('register.html')
 
 @app.route('/logout')
 @login_required
@@ -214,6 +391,37 @@ def settings():
     sessions = SurveySession.query.all()
     active_session = SurveySession.query.filter_by(is_active=True).first()
     return render_template('settings.html', sessions=sessions, active_session=active_session)
+
+@app.route('/data/<hh_id>', methods=['GET'])
+def get_household_data(hh_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute("SELECT * FROM ds.tbl_roster WHERE hh_id = %s and grantee= 'YES'" , (hh_id,))
+        data = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        if not data:
+            return jsonify({
+                "status": "not_found",
+                "message": f"No records found for hh_id '{hh_id}'"
+            }), 404
+
+        # ✅ Return JSON
+        return jsonify({
+            "status": "success",
+            "count": len(data),
+            "data": data
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 @app.route('/reset_password', methods=['GET', 'POST'])
 @login_required
@@ -292,6 +500,8 @@ def submit():
         db.session.add(beneficiary)
 
     assessment = Assessment(beneficiary=beneficiary, session=active_session)
+    assessment.username = current_user.username
+
     db.session.add(assessment)
 
     for key, value in request.form.items():

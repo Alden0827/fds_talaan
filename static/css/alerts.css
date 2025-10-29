@@ -1,38 +1,39 @@
+/* ===== Base Alert Style ===== */
 .alert {
   position: relative;
-  padding: 1rem 1.5rem;
-  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
   margin: 1rem 0;
-  /*backdrop-filter: blur(12px);*/
-  /*-webkit-backdrop-filter: blur(12px);*/
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
   font-size: 0.95rem;
   font-weight: 500;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  line-height: 1.4;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
 
-/* Glassmorphic yellow warning */
-.alert-warning {
-  background: rgba(255, 193, 7, 1);
-  border-left: 5px solid rgba(255, 193, 7, 0.8);
-  color: #664d03;
-}
-
-/* Fade and show animation */
+/* Fade animation */
 .alert.fade {
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+  transform: translateY(-6px);
 }
 .alert.show {
   opacity: 1;
+  transform: translateY(0);
 }
 
-/* Close button style */
-.btn-close {
+/* Close button */
+.alert .btn-close {
+  margin-left: auto;
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -41,13 +42,87 @@
   opacity: 0.6;
   transition: opacity 0.2s ease;
 }
-.btn-close:hover {
+.alert .btn-close:hover {
   opacity: 1;
   cursor: pointer;
 }
 
+/* ===== Alert Variants ===== */
+
+/* Info */
+.alert-info {
+  background: rgba(13, 110, 253, 0.15);
+  color: #0d6efd;
+  border: 1px solid rgba(13, 110, 253, 0.25);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+}
+.alert-info i {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  color: #0d6efd;
+}
+.alert-info strong {
+  color: #084298;
+}
+.alert-info:hover {
+  background: rgba(13, 110, 253, 0.25);
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.2);
+}
+
+/* Success */
 .alert-success {
-  background: rgba(25, 135, 84, 1);
-  border-left: 5px solid rgba(25, 135, 84, 1);
-  color: #000000;
+  background: rgba(25, 135, 84, 0.15);
+  color: #198754;
+  border: 1px solid rgba(25, 135, 84, 0.25);
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.15);
+}
+.alert-success strong {
+  color: #0f5132;
+}
+.alert-success:hover {
+  background: rgba(25, 135, 84, 0.25);
+  box-shadow: 0 6px 20px rgba(25, 135, 84, 0.2);
+}
+
+/* Warning */
+.alert-warning {
+  background: rgba(255, 193, 7, 0.2);
+  color: #664d03;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.15);
+}
+.alert-warning strong {
+  color: #7a5b00;
+}
+.alert-warning:hover {
+  background: rgba(255, 193, 7, 0.3);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.2);
+}
+
+/* Fade-in keyframes (for .fade.show) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+/* Danger */
+.alert-danger {
+  background: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.25);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+}
+.alert-danger strong {
+  color: #842029;
+}
+.alert-danger i {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  color: #dc3545;
+}
+.alert-danger:hover {
+  background: rgba(220, 53, 69, 0.25);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.2);
 }

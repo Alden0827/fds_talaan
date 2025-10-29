@@ -9,6 +9,11 @@
     <h3>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h3>
     <h4>Information Sheet</h4>
 </header>
+<style>
+.hidden {
+    display: none !important;
+}
+</style>
 
 <section class="mb-4">
     <p>
@@ -83,19 +88,31 @@
     </ul>
 </section>
 
+
 <form action="{{ url_for('submit') }}" method="POST" class="needs-validation" novalidate>
     <section class="glass-panel-0 mb-4">
+        <h3>Search</h3>
+        <div class="question-grid">
+            <div class="question-item">
+                <label for="household_id" class="form-label required">Household ID number:</label>
+                <input type="text" class="form-control mb-3" id="household_id" name="household_id" value="045810001-9412-00043" required>
+               <button type="button" id="btnSearch" class="btn btn-primary mt-2">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <div id="alertContainer"></div>
+            </div>
+            
+
+        </div>
+     </section>
+   
+    <section class="glass-panel-0 mb-4 survey-form hidden">
         <h3>Personal Information</h3>
         <div class="question-grid">
             <div class="question-item">
                 <label for="name" class="form-label required">Pangalan:</label>
                 <input type="text" class="form-control" id="name" name="name" required>
                 <div class="invalid-feedback">Pangalan ay kailangan.</div>
-            </div>
-            <div class="question-item">
-                <label for="household_id" class="form-label required">Household ID number:</label>
-                <input type="text" class="form-control" id="household_id" name="household_id" required>
-                <div class="invalid-feedback">Household ID number ay kailangan.</div>
             </div>
             <div class="question-item">
                 <label for="gender" class="form-label required">Kasarian:</label>
@@ -148,7 +165,7 @@
     </section>
 
     {% for section_name, questions_in_section in questions.items() %}
-    <section class="glass-panel-0 mb-4">
+    <section class="glass-panel-0 mb-4 survey-form hidden">
         <h3>{{ section_name }}</h3>
         <div class="question-grid">
             {% for question in questions_in_section %}
@@ -301,4 +318,68 @@ document.addEventListener('DOMContentLoaded', function () {
     })()
 </script>
 
+
+<script>
+document.getElementById("btnSearch").addEventListener("click", async function() {
+    const hh_id = document.getElementById("household_id").value.trim();
+    const alertContainer = document.getElementById("alertContainer");
+    const surveyForms = document.querySelectorAll(".survey-form"); // ← all sections
+
+    alertContainer.innerHTML = ""; 
+    surveyForms.forEach(form => form.classList.add("hidden")); // hide all first
+
+    if (!hh_id) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm mt-3" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Please enter a Household ID.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+        return;
+    }
+
+    try {
+        const response = await fetch(`/data/${hh_id}`);
+        const result = await response.json();
+
+        if (result.status === "success" && result.data.length > 0) {
+            const info = result.data[0];
+
+            // ✅ Fill form fields
+            document.getElementById("name").value = info.first_name + ' ' + info.middle_name + ' ' + info.last_name || "";
+            document.getElementById("gender").value = info.sex || "";
+            document.getElementById("relation_to_hh_head").value = info.relation || "";
+            document.getElementById("contact_number").value = info.contact_number || "";
+            document.getElementById("province").value = info.province || "";
+            document.getElementById("parent_group_name").value = info.parent_group_name || "";
+
+            // ✅ Show all survey-form sections
+            surveyForms.forEach(form => form.classList.remove("hidden"));
+
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show shadow-sm mt-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Data found and loaded successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3" role="alert">
+                    <span class="fas fa-times-circle me-2"></span>
+                    No record found for Household ID: ${hh_id}.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+        }
+    } catch (error) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3" role="alert">
+                <i class="fas fa-times-circle me-2"></i>
+                Error fetching data: ${error.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+    }
+});
+</script>
+
 {% endblock %}
+

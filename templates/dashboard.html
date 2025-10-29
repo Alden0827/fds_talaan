@@ -137,8 +137,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Province Scores Chart (Horizontal Grouped Bar) ---
     const provinceScoresCanvas = document.getElementById('provinceScoresChart');
+
     if (provinceScoresCanvas) {
         try {
+
             const provinceChartData = JSON.parse(provinceScoresCanvas.dataset.chartData);
             if (provinceChartData && provinceChartData.labels && provinceChartData.labels.length > 0) {
                 new Chart(provinceScoresCanvas.getContext('2d'), {
@@ -177,8 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         onClick: function(event, elements) {
                             if (elements.length > 0) {
                                 const chart = this;
-                                const elementIndex = elements[0].index;
+                                const elementIndex = elements[0]._index;
                                 const province = chart.data.labels[elementIndex];
+                                // console.log(chart.data.labels);
+                                // console.log(elements[0]._index);
                                 window.location.href = '/dashboard/province/' + encodeURIComponent(province);
                             }
                         }
