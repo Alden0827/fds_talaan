@@ -473,37 +473,50 @@ def index():
                            address_data=json.dumps(address_data))
 
 @app.route('/submit', methods=['POST'])
+@login_required
 def submit():
-    active_session = SurveySession.query.filter_by(is_active=True).first()
-    if not active_session:
-        flash('No active survey session. Please contact an administrator.', 'danger')
-        return redirect(url_for('index'))
+    assessment_id = request.form.get('assessment_id')
+    if assessment_id:
+        # Editing existing assessment
+        assessment = Assessment.query.get_or_404(assessment_id)
+        # Authorization check
+        if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+            flash('You do not have permission to edit this assessment.', 'danger')
+            return redirect(url_for('results'))
 
-    household_id = request.form.get('household_id')
-    if not household_id:
-        flash('Household ID is required.', 'danger')
-        return redirect(url_for('index'))
+        # Clear existing answers to replace them
+        Answer.query.filter_by(assessment_id=assessment_id).delete()
+    else:
+        # Creating new assessment
+        active_session = SurveySession.query.filter_by(is_active=True).first()
+        if not active_session:
+            flash('No active survey session. Please contact an administrator.', 'danger')
+            return redirect(url_for('index'))
 
-    beneficiary = Beneficiary.query.filter_by(household_id=household_id).first()
-    if not beneficiary:
-        beneficiary = Beneficiary(
-            household_id=household_id,
-            name=request.form.get('name'),
-            gender=request.form.get('gender'),
-            relationship_to_grantee=request.form.get('relationship_to_grantee'),
-            province=request.form.get('province'),
-            municipality=request.form.get('municipality'),
-            barangay=request.form.get('barangay'),
-            parent_group_name=request.form.get('parent_group_name'),
-            contact_number=request.form.get('contact_number')
-        )
-        db.session.add(beneficiary)
+        household_id = request.form.get('household_id')
+        if not household_id:
+            flash('Household ID is required.', 'danger')
+            return redirect(url_for('index'))
 
-    assessment = Assessment(beneficiary=beneficiary, session=active_session)
-    assessment.username = current_user.username
+        beneficiary = Beneficiary.query.filter_by(household_id=household_id).first()
+        if not beneficiary:
+            beneficiary = Beneficiary(household_id=household_id)
+            db.session.add(beneficiary)
 
-    db.session.add(assessment)
+        assessment = Assessment(beneficiary=beneficiary, session=active_session, username=current_user.username)
+        db.session.add(assessment)
 
+    # Update beneficiary details
+    assessment.beneficiary.name = request.form.get('name')
+    assessment.beneficiary.gender = request.form.get('gender')
+    assessment.beneficiary.relationship_to_grantee = request.form.get('relationship_to_grantee')
+    assessment.beneficiary.province = request.form.get('province')
+    assessment.beneficiary.municipality = request.form.get('municipality')
+    assessment.beneficiary.barangay = request.form.get('barangay')
+    assessment.beneficiary.parent_group_name = request.form.get('parent_group_name')
+    assessment.beneficiary.contact_number = request.form.get('contact_number')
+
+    # Process answers
     for key, value in request.form.items():
         if key.startswith('q-'):
             question_id = int(key.split('-')[1])
@@ -517,7 +530,7 @@ def submit():
 
     try:
         db.session.commit()
-        flash('Assessment submitted successfully!', 'success')
+        flash(f'Assessment {"updated" if assessment_id else "submitted"} successfully!', 'success')
         return redirect(url_for('success'))
     except Exception as e:
         db.session.rollback()
@@ -531,24 +544,108 @@ def success():
 @app.route('/results')
 def results():
 
-    if current_user.username in ['aaquinones','YSMANTAWIL']:
-        
-        # Admin users — see all assessments
-        assessments = Assessment.query.options(
-            joinedload(Assessment.beneficiary)
-        ).order_by(Assessment.date_taken.desc()).all()
-    else:
+    sessions = SurveySession.query.order_by(SurveySession.name).all()
+    selected_session_id = request.args.get('session_id', type=int)
+    search_query = request.args.get('search', '')
 
-        # Regular users — see only their own
-        assessments = (
-            Assessment.query
-            .options(joinedload(Assessment.beneficiary))
-            .filter(Assessment.username == current_user.username)
-            .order_by(Assessment.date_taken.desc())
-            .all()
+    query = Assessment.query.options(joinedload(Assessment.beneficiary))
+
+    if current_user.username not in ['aaquinones', 'YSMANTAWIL']:
+        query = query.filter(Assessment.username == current_user.username)
+
+    if selected_session_id:
+        query = query.filter(Assessment.session_id == selected_session_id)
+
+    if search_query:
+        query = query.join(Beneficiary).filter(
+            Beneficiary.name.ilike(f'%{search_query}%') |
+            Beneficiary.household_id.ilike(f'%{search_query}%')
         )
 
-    return render_template('results.html', assessments=assessments)
+    assessments = query.order_by(Assessment.date_taken.desc()).all()
+
+    return render_template('results.html',
+                           assessments=assessments,
+                           sessions=sessions,
+                           selected_session_id=selected_session_id,
+                           search_query=search_query)
+
+@app.route('/delete_assessment/<int:assessment_id>', methods=['POST'])
+@login_required
+def delete_assessment(assessment_id):
+    assessment = Assessment.query.get_or_404(assessment_id)
+    # Add authorization check if needed, e.g., only admin or the user who created it
+    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+        flash('You do not have permission to delete this assessment.', 'danger')
+        return redirect(url_for('results'))
+
+    db.session.delete(assessment)
+    db.session.commit()
+    flash('Assessment deleted successfully.', 'success')
+    return redirect(url_for('results'))
+
+@app.route('/view_assessment/<int:assessment_id>')
+@login_required
+def view_assessment(assessment_id):
+    assessment = Assessment.query.options(
+        joinedload(Assessment.beneficiary),
+        joinedload(Assessment.answers).joinedload(Answer.question)
+    ).get_or_404(assessment_id)
+
+    # Authorization check
+    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+        flash('You do not have permission to view this assessment.', 'danger')
+        return redirect(url_for('results'))
+
+    answers_by_section = defaultdict(list)
+    for answer in sorted(assessment.answers, key=lambda x: x.question.order):
+        answers_by_section[answer.question.section].append(answer)
+
+    return render_template('view_assessment.html', assessment=assessment, answers_by_section=answers_by_section)
+
+@app.route('/edit_assessment/<int:assessment_id>')
+@login_required
+def edit_assessment(assessment_id):
+    assessment = Assessment.query.options(
+        joinedload(Assessment.beneficiary),
+        joinedload(Assessment.answers)
+    ).get_or_404(assessment_id)
+
+    # Authorization check
+    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+        flash('You do not have permission to edit this assessment.', 'danger')
+        return redirect(url_for('results'))
+
+    questions_from_db = Question.query.order_by(Question.order).all()
+    grouped_questions = defaultdict(list)
+    for q in questions_from_db:
+        grouped_questions[q.section].append(q)
+
+    answers = {answer.question_id: answer.value for answer in assessment.answers}
+
+    address_data = defaultdict(lambda: defaultdict(list))
+    with open('address.csv', mode='r', encoding='utf-8') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            province = row['Province Name']
+            municipality = row['City/Municipality Name']
+            barangay = row['Barangay Name']
+
+            if province and municipality and barangay:
+                address_data[province][municipality].append(barangay)
+
+    provinces = sorted(address_data.keys())
+    for province in address_data:
+        for municipality in address_data[province]:
+            address_data[province][municipality] = sorted(list(set(address_data[province][municipality])))
+        address_data[province] = dict(sorted(address_data[province].items()))
+
+    return render_template('index.html',
+                           questions=grouped_questions,
+                           provinces=provinces,
+                           address_data=json.dumps(address_data),
+                           assessment=assessment,
+                           answers=answers)
 
 @app.route('/dashboard')
 def dashboard():
