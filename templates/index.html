@@ -14,13 +14,11 @@
         {% if assessment %}
             Edit Family Assessment
         {% else %}
-            DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT
+            
         {% endif %}
     </h1>
     {% if not assessment %}
-    <h2>Pantawid Pamilyang Pilipino Program</h2>
     <h3>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h3>
-    <h4>Information Sheet</h4>
     {% endif %}
 </header>
 <style>
@@ -30,57 +28,18 @@
 </style>
 
 {% if not assessment %}
+
 <section class="mb-4">
     <p>
         Ang <strong>"Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad"</strong> 
         ay isang beneficiary self-assessment tool na idinisenyo upang sukatin at subaybayan ang inyong 
         pag-unlad o pagbabago sa mga partner-beneficiaries ng 4Ps.
-    </p>
-    <p>
         Ito ay sistematikong pamamaraan na nagbibigay-daan upang makita ang resulta mula sa paglahok sa 4Ps. 
         Isa rin itong kasangkapan na magsisilbing gabay sa pagpaplano at pagpapatupad ng mga programa at serbisyo 
         tulad ng Family Development Session (FDS), para sa mga pamilyang benepisyaryo ng 4Ps.
     </p>
 
-    <h5 class="mt-3">Ang 4Ps Talaan ng Pagbabago at Pag-unlad ay nakatuon sa:</h5>
-    <ol>
-        <li>
-            <strong>Katatasan sa Programa</strong><br>
-            Pag-unawa ng mga benepisyaryo sa mga pangunahing layunin, pamantayan at kondisyon ng programa 
-            at kamalayan sa 4Ps.
-        </li>
-        <li>
-            <strong>Edukasyon</strong><br>
-            Kamalayan ng mga benepisyaryo sa mga kondisyon sa edukasyon, pagtiyak na ang mga bata ay regular 
-            na pumapasok sa paaralan, at pagsuporta ng mga tagapag-alaga sa edukasyon ng kanilang mga anak.
-        </li>
-        <li>
-            <strong>Kalusugan</strong><br>
-            Pagsubaybay sa mga kondisyon ng kalusugan at pagtiyak ng access sa mahahalagang serbisyong pangkalusugan.
-        </li>
-        <li>
-            <strong>Nutrisyon</strong><br>
-            Pagtataguyod ng malusog na mga gawi sa pagkain, pagpapalakas sa seguridad sa pagkain, 
-            at pagtiyak ng wastong paglaki at pag-unlad ng mga bata.
-        </li>
-        <li>
-            <strong>Pamamahala sa buhay pamilya</strong><br>
-            Pangkalahatang kagalingan at pamamahala ng buhay pamilya, pagtataguyod ng kabuuang pag-unlad ng pamilya 
-            at papel nito sa loob ng mas malawak na komunidad.
-        </li>
-        <li>
-            <strong>Kabuhayan at Kaalaman sa Pananalapi</strong><br>
-            Naglalayong suriin at pahusayin ang kaalaman sa pananalapi at kabuhayan ng mga pamilya. 
-            Ang mga pahayag na ito ay tumutukoy sa pagsubaybay at pagsulong ng mahahalagang kasanayan 
-            sa pananalapi at pag-uugali na kinakailangan para sa katatagan at paglago ng ekonomiya.
-        </li>
-    </ol>
 
-    <p>
-        <strong>Ang pagsusuri ay may dalawang bahagi.</strong> Ang unang bahagi ay pagsagot sa mga pahayag gamit ang 
-        sukat ng likert (marka mula 1-4) at ang ikalawang bahagi ay pagsisiyasat ng mga tanong sa pamamagitan ng 
-        pasalaysay na sagot.
-    </p>
     <hr>
     <p>
         <strong>Alinsunod sa Data Privacy Act of 2012 (R.A. 10173)</strong>, tungkulin ng DSWD na protektahan ang mga datos 
@@ -89,6 +48,12 @@
         impormasyon na aming nakalap mula sa inyo.
     </p>
     <hr>
+    <p>
+        <strong>Ang pagsusuri ay may dalawang bahagi.</strong> Ang unang bahagi ay pagsagot sa mga pahayag gamit ang 
+        sukat ng likert (marka mula 1-4) at ang ikalawang bahagi ay pagsisiyasat ng mga tanong sa pamamagitan ng 
+        pasalaysay na sagot.
+    </p>
+
     <p>
         <strong>Panuto:</strong> Basahing mabuti ang mga sumusunod na pahayag. Tiyakin na ang inyong mga sagot ay naaayon 
         sa inyong karanasan at pagkaunawa sa mga pahayag. Mula 1 hanggang 4, suriin ang inyong kaalaman, at ilagay ang 
@@ -102,6 +67,7 @@
         <li>N/A - Hindi angkop ang pahayag para sa sambahayan</li>
     </ul>
 </section>
+
 {% endif %}
 
 
@@ -110,8 +76,7 @@
         <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
     {% endif %}
 
-    <section class="glass-panel-0 mb-4">
-        <h3>Search</h3>
+    <section class="glass-panel-0 mb-3">
         <div class="question-grid">
             <div class="question-item">
                 <label for="household_id" class="form-label required">Household ID number:</label>
@@ -200,7 +165,7 @@
     </section>
     {% endfor %}
 
-    <div class="text-center mt-5">
+    <div class="text-center mt-5 survey-form {% if not assessment %}hidden{% endif %}">
         <button type="submit" class="btn btn-primary btn-lg">
             {% if assessment %}
                 Update Assessment

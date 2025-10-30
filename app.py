@@ -13,6 +13,9 @@ import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from functools import wraps
+SUPER_USER = ['aaquinones', 'YSMANTAWIL']
+
+
 
 def admin_required(f):
     @wraps(f)
@@ -33,6 +36,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
+@app.context_processor
+def inject_super_user():
+    return dict(SUPER_USER=SUPER_USER)
 
 # --- Database Models ---
 
@@ -149,6 +157,8 @@ class SimpleUser(UserMixin):
         self.status = user_dict.get("status")
         self.is_approved = user_dict.get("is_approved", True)
         self.password = user_dict.get("password")
+
+
 
     def get_id(self):
         # Flask-Login uses this for session tracking
@@ -367,7 +377,7 @@ def admin_reset_password(user_id):
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
-@admin_required
+# @admin_required
 def settings():
     if request.method == 'POST':
         session_name = request.form.get('session_name')
@@ -472,6 +482,40 @@ def index():
                            provinces=provinces,
                            address_data=json.dumps(address_data))
 
+@app.route('/home')
+@login_required
+def home():
+    questions_from_db = Question.query.order_by(Question.order).all()
+    grouped_questions = defaultdict(list)
+    for q in questions_from_db:
+        grouped_questions[q.section].append(q)
+
+    # Load and process address data
+    address_data = defaultdict(lambda: defaultdict(list))
+    with open('address.csv', mode='r', encoding='utf-8') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            province = row['Province Name']
+            municipality = row['City/Municipality Name']
+            barangay = row['Barangay Name']
+
+            if province and municipality and barangay:
+                address_data[province][municipality].append(barangay)
+
+    # Get unique sorted list of provinces
+    provinces = sorted(address_data.keys())
+
+    # Sort municipalities and barangays
+    for province in address_data:
+        for municipality in address_data[province]:
+            address_data[province][municipality] = sorted(list(set(address_data[province][municipality])))
+        address_data[province] = dict(sorted(address_data[province].items()))
+
+    return render_template('home.html',
+                           questions=grouped_questions,
+                           provinces=provinces,
+                           address_data=json.dumps(address_data))
+
 @app.route('/submit', methods=['POST'])
 @login_required
 def submit():
@@ -480,7 +524,7 @@ def submit():
         # Editing existing assessment
         assessment = Assessment.query.get_or_404(assessment_id)
         # Authorization check
-        if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+        if current_user.username not in SUPER_USER and assessment.username != current_user.username:
             flash('You do not have permission to edit this assessment.', 'danger')
             return redirect(url_for('results'))
 
@@ -550,7 +594,7 @@ def results():
 
     query = Assessment.query.options(joinedload(Assessment.beneficiary))
 
-    if current_user.username not in ['aaquinones', 'YSMANTAWIL']:
+    if current_user.username not in SUPER_USER:
         query = query.filter(Assessment.username == current_user.username)
 
     if selected_session_id:
@@ -575,7 +619,7 @@ def results():
 def delete_assessment(assessment_id):
     assessment = Assessment.query.get_or_404(assessment_id)
     # Add authorization check if needed, e.g., only admin or the user who created it
-    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
         flash('You do not have permission to delete this assessment.', 'danger')
         return redirect(url_for('results'))
 
@@ -593,7 +637,7 @@ def view_assessment(assessment_id):
     ).get_or_404(assessment_id)
 
     # Authorization check
-    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
         flash('You do not have permission to view this assessment.', 'danger')
         return redirect(url_for('results'))
 
@@ -612,7 +656,7 @@ def edit_assessment(assessment_id):
     ).get_or_404(assessment_id)
 
     # Authorization check
-    if current_user.username not in ['aaquinones', 'YSMANTAWIL'] and assessment.username != current_user.username:
+    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
         flash('You do not have permission to edit this assessment.', 'danger')
         return redirect(url_for('results'))
 
