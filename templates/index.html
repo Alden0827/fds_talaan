@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
 
-{% block title %}4Ps Talaan ng Pagbabago at Pag-unlad{% endblock %}
+{% block title %}
+    {% if assessment %}
+        Edit Assessment
+    {% else %}
+        4Ps Talaan ng Pagbabago at Pag-unlad
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <header class="text-center border-bottom pb-3 mb-4">
-    <h1>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h1>
+    <h1>
+        {% if assessment %}
+            Edit Family Assessment
+        {% else %}
+            DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT
+        {% endif %}
+    </h1>
+    {% if not assessment %}
     <h2>Pantawid Pamilyang Pilipino Program</h2>
     <h3>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h3>
     <h4>Information Sheet</h4>
+    {% endif %}
 </header>
 <style>
 .hidden {
@@ -15,6 +29,7 @@
 }
 </style>
 
+{% if not assessment %}
 <section class="mb-4">
     <p>
         Ang <strong>"Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad"</strong> 
@@ -87,118 +102,96 @@
         <li>N/A - Hindi angkop ang pahayag para sa sambahayan</li>
     </ul>
 </section>
+{% endif %}
 
 
 <form action="{{ url_for('submit') }}" method="POST" class="needs-validation" novalidate>
+    {% if assessment %}
+        <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
+    {% endif %}
+
     <section class="glass-panel-0 mb-4">
         <h3>Search</h3>
         <div class="question-grid">
             <div class="question-item">
                 <label for="household_id" class="form-label required">Household ID number:</label>
-                <input type="text" class="form-control mb-3" id="household_id" name="household_id" value="045810001-9412-00043" required>
-               <button type="button" id="btnSearch" class="btn btn-primary mt-2">
+                <input type="text" class="form-control mb-3" id="household_id" name="household_id" value="{{ assessment.beneficiary.household_id if assessment else '045810001-9412-00043' }}" required {% if assessment %}readonly{% endif %}>
+               <button type="button" id="btnSearch" class="btn btn-primary mt-2" {% if assessment %}disabled{% endif %}>
                     <i class="fas fa-search"></i> Search
                 </button>
                 <div id="alertContainer"></div>
             </div>
-            
-
         </div>
      </section>
    
-    <section class="glass-panel-0 mb-4 survey-form hidden">
+    <section class="glass-panel-0 mb-4 survey-form {% if not assessment %}hidden{% endif %}">
         <h3>Personal Information</h3>
         <div class="question-grid">
             <div class="question-item">
                 <label for="name" class="form-label required">Pangalan:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name" value="{{ assessment.beneficiary.name if assessment else '' }}" required>
                 <div class="invalid-feedback">Pangalan ay kailangan.</div>
             </div>
             <div class="question-item">
                 <label for="gender" class="form-label required">Kasarian:</label>
                 <select class="form-select" id="gender" name="gender" required>
                     <option value="" disabled selected hidden>Pumili</option>
-                    <option value="Babae">Babae</option>
-                    <option value="Lalaki">Lalaki</option>
+                    <option value="Babae" {% if assessment and assessment.beneficiary.gender == 'Babae' %}selected{% endif %}>Babae</option>
+                    <option value="Lalaki" {% if assessment and assessment.beneficiary.gender == 'Lalaki' %}selected{% endif %}>Lalaki</option>
                 </select>
                 <div class="invalid-feedback">Pumili ng kasarian.</div>
             </div>
             <div class="question-item">
                 <label for="relationship_to_grantee" class="form-label required">Relasyon sa Grantee:</label>
-                <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee" required>
+                <input type="text" class="form-control" id="relationship_to_grantee" name="relationship_to_grantee" value="{{ assessment.beneficiary.relationship_to_grantee if assessment else '' }}" required>
                 <div class="invalid-feedback">Relasyon sa grantee ay kailangan.</div>
             </div>
             <div class="question-item">
                 <label for="contact_number" class="form-label">Contact Number:</label>
-                <input type="text" class="form-control" id="contact_number" name="contact_number">
+                <input type="text" class="form-control" id="contact_number" name="contact_number" value="{{ assessment.beneficiary.contact_number if assessment else '' }}">
             </div>
-
 
             <div class="question-item">
                 <label for="province" class="form-label required">Province:</label>
-                <input type="text" readonly=true class="form-control"  id="province" name="province">
-
-                <!--
-                 <select class="form-select" id="province" name="province" required>
-                    <option value="" disabled selected hidden>Select Province</option>
-                    {--% for province in provinces %}
-                        <option value="{{ province }}">{{ province }}</option>
-                    {--% endfor %}
-                    </select> 
-                    <div class="invalid-feedback">Pumili ng probinsya.</div>
-                -->
-                
+                <input type="text" readonly=true class="form-control"  id="province" name="province" value="{{ assessment.beneficiary.province if assessment else '' }}">
             </div>
             <div class="question-item">
                 <label for="municipality" class="form-label required">Municipality:</label>
-                <input type="text" readonly=true class="form-control"  id="municipality" name="municipality">
-                <!--
-                <select class="form-select" id="municipality" name="municipality" required>
-                    <option value="" disabled selected hidden>Select Municipality</option>
-                </select>
-                <div class="invalid-feedback">Pumili ng munisipyo.</div>
-                -->
+                <input type="text" readonly=true class="form-control"  id="municipality" name="municipality" value="{{ assessment.beneficiary.municipality if assessment else '' }}">
             </div>
             <div class="question-item">
                 <label for="barangay" class="form-label required">Barangay:</label>
-                <input type="text" readonly=true class="form-control"  id="barangay" name="barangay">
-
-                <!--
-                <select class="form-select" id="barangay" name="barangay" required>
-                    <option value="" disabled selected hidden>Select Barangay</option>
-                </select>
-                <div class="invalid-feedback">Pumili ng barangay.</div>
-                -->
+                <input type="text" readonly=true class="form-control"  id="barangay" name="barangay" value="{{ assessment.beneficiary.barangay if assessment else '' }}">
             </div>
-
 
             <div class="question-item">
                 <label for="parent_group_name" class="form-label required">Pangalan ng Parent Group:</label>
-                <input type="text" class="form-control" id="parent_group_name" name="parent_group_name" required>
+                <input type="text" class="form-control" id="parent_group_name" name="parent_group_name" value="{{ assessment.beneficiary.parent_group_name if assessment else '' }}" required>
                 <div class="invalid-feedback">Pangalan ng parent group ay kailangan.</div>
             </div>
         </div>
     </section>
 
     {% for section_name, questions_in_section in questions.items() %}
-    <section class="glass-panel-0 mb-4 survey-form hidden">
+    <section class="glass-panel-0 mb-4 survey-form {% if not assessment %}hidden{% endif %}">
         <h3>{{ section_name }}</h3>
         <div class="question-grid">
             {% for question in questions_in_section %}
                 <div class="question-item">
                     <label for="q-{{ question.id }}" class="form-label required mb-1">{{ question.text }}</label>
+                    {% set answer_val = answers.get(question.id) if answers else '' %}
                     {% if question.question_type == 'rating' %}
                         <select class="form-select" id="q-{{ question.id }}" name="q-{{ question.id }}" required>
-                            <option value="" disabled selected hidden>Pumili</option>
-                            <option value="4">4 - Lubos na sumasang-ayon</option>
-                            <option value="3">3 - Sumasang-ayon</option>
-                            <option value="2">2 - Hindi Sumasang-ayon</option>
-                            <option value="1">1 - Lubos na Hindi Sumasang-ayon</option>
-                            <option value="na">N/A - Hindi angkop</option>
+                            <option value="" disabled {% if not answer_val %}selected{% endif %} hidden>Pumili</option>
+                            <option value="4" {% if answer_val == '4' %}selected{% endif %}>4 - Lubos na sumasang-ayon</option>
+                            <option value="3" {% if answer_val == '3' %}selected{% endif %}>3 - Sumasang-ayon</option>
+                            <option value="2" {% if answer_val == '2' %}selected{% endif %}>2 - Hindi Sumasang-ayon</option>
+                            <option value="1" {% if answer_val == '1' %}selected{% endif %}>1 - Lubos na Hindi Sumasang-ayon</option>
+                            <option value="na" {% if answer_val == 'na' %}selected{% endif %}>N/A - Hindi angkop</option>
                         </select>
                         <div class="invalid-feedback">Pumili ng score.</div>
                     {% else %}
-                        <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3" required></textarea>
+                        <textarea class="form-control" id="q-{{ question.id }}" name="q-{{ question.id }}" rows="3" required>{{ answer_val }}</textarea>
                         <div class="invalid-feedback">Sagot ay kailangan.</div>
                     {% endif %}
                 </div>
@@ -208,74 +201,15 @@
     {% endfor %}
 
     <div class="text-center mt-5">
-        <button type="submit" class="btn btn-primary btn-lg">Submit Assessment</button>
+        <button type="submit" class="btn btn-primary btn-lg">
+            {% if assessment %}
+                Update Assessment
+            {% else %}
+                Submit Assessment
+            {% endif %}
+        </button>
     </div>
 </form>
-
-<!-- <script>
-document.addEventListener('DOMContentLoaded', function () {
-    
-    // ===== Address dropdown logic =====
-    const addressData = {{ address_data | tojson | safe }};
-
-    const provinceSelect = document.getElementById('province');
-
-    const municipalitySelect = document.getElementById('municipality');
-    const barangaySelect = document.getElementById('barangay');
-
-    provinceSelect.addEventListener('change', function () {
-        const selectedProvince = this.value;
-        municipalitySelect.innerHTML = '<option value="" disabled selected hidden>Select Municipality</option>';
-        barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
-        console.log(addressData)
-        console.log(selectedProvince)
-        console.log(addressData[selectedProvince])
-
-
-
-        if (selectedProvince && addressData[selectedProvince]) {
-            
-            Object.keys(addressData[selectedProvince]).forEach(function (municipality) {
-                const option = document.createElement('option');
-                option.value = municipality;
-                option.textContent = municipality;
-                municipalitySelect.appendChild(option);
-
-            });
-        }
-    });
-
-    municipalitySelect.addEventListener('change', function () {
-        const selectedProvince = provinceSelect.value;
-        const selectedMunicipality = this.value;
-        barangaySelect.innerHTML = '<option value="" disabled selected hidden>Select Barangay</option>';
-
-        if (selectedProvince && selectedMunicipality && addressData[selectedProvince][selectedMunicipality]) {
-            addressData[selectedProvince][selectedMunicipality].forEach(function (barangay) {
-                const option = document.createElement('option');
-                option.value = barangay;
-                option.textContent = barangay;
-                barangaySelect.appendChild(option);
-            });
-        }
-    });
-
-    // ===== Bootstrap custom validation =====
-    (function () {
-      'use strict';
-      const forms = document.querySelectorAll('.needs-validation');
-      Array.from(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-    })();
-});
-</script> -->
 
 <script>
     // Address dropdown logic
@@ -400,4 +334,3 @@ document.getElementById("btnSearch").addEventListener("click", async function() 
 </script>
 
 {% endblock %}
-

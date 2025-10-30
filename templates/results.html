@@ -5,7 +5,32 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Assessment Results</h1>
-    <a href="{{ url_for('download_csv') }}" class="btn btn-success">
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('results') }}" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <label for="search" class="visually-hidden">Search</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Search by Name or Household ID" value="{{ search_query or '' }}">
+            </div>
+            <div class="col-md-5">
+                <label for="session_id" class="visually-hidden">Session</label>
+                <select class="form-select" id="session_id" name="session_id">
+                    <option value="">All Sessions</option>
+                    {% for session in sessions %}
+                        <option value="{{ session.id }}" {% if session.id == selected_session_id %}selected{% endif %}>{{ session.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mb-3">
+     <a href="{{ url_for('download_csv') }}" class="btn btn-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -23,6 +48,7 @@
                 <th scope="col">Beneficiary Name</th>
                 <th scope="col">Household ID</th>
                 <th scope="col">Date Taken</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +58,13 @@
                 <td>{{ assessment.beneficiary.name }}</td>
                 <td>{{ assessment.beneficiary.household_id }}</td>
                 <td>{{ assessment.date_taken.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                <td>
+                    <a href="{{ url_for('view_assessment', assessment_id=assessment.id) }}" class="btn btn-sm btn-info">View</a>
+                    <a href="{{ url_for('edit_assessment', assessment_id=assessment.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="{{ url_for('delete_assessment', assessment_id=assessment.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this assessment?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

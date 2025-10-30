@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}View Assessment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Assessment Details</h1>
+        <a href="{{ url_for('results') }}" class="btn btn-secondary">Back to Results</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Assessment #{{ assessment.id }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Beneficiary:</strong> {{ assessment.beneficiary.name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Household ID:</strong> {{ assessment.beneficiary.household_id }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Date Taken:</strong> {{ assessment.date_taken.strftime('%Y-%m-%d %I:%M %p') }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Session:</strong> {{ assessment.session.name if assessment.session else 'N/A' }}
+                </div>
+            </div>
+             <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Taken by:</strong> {{ assessment.username }}
+                </div>
+            </div>
+            <hr>
+
+            {% for section, answers in answers_by_section.items() %}
+                <div class="mb-4">
+                    <h4 class="bg-light p-2 rounded">{{ section }}</h4>
+                    <ul class="list-group">
+                        {% for answer in answers %}
+                            <li class="list-group-item">
+                                <p class="fw-bold mb-1">{{ answer.question.text }}</p>
+                                <p class="mb-0"><em>Answer:</em> {{ answer.value }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
