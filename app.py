@@ -530,9 +530,24 @@ def success():
 
 @app.route('/results')
 def results():
-    assessments = Assessment.query.options(
-        joinedload(Assessment.beneficiary)
-    ).order_by(Assessment.date_taken.desc()).all()
+
+    if current_user.username in ['aaquinones','YSMANTAWIL']:
+        
+        # Admin users — see all assessments
+        assessments = Assessment.query.options(
+            joinedload(Assessment.beneficiary)
+        ).order_by(Assessment.date_taken.desc()).all()
+    else:
+
+        # Regular users — see only their own
+        assessments = (
+            Assessment.query
+            .options(joinedload(Assessment.beneficiary))
+            .filter(Assessment.username == current_user.username)
+            .order_by(Assessment.date_taken.desc())
+            .all()
+        )
+
     return render_template('results.html', assessments=assessments)
 
 @app.route('/dashboard')
