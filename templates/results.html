@@ -9,13 +9,13 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" action="{{ url_for('results') }}" class="row g-3 align-items-center">
-            <div class="col-md-5">
+            <div class="col-md-5 mb-3">
                 <label for="search" class="visually-hidden">Search</label>
                 <input type="text" class="form-control" id="search" name="search" placeholder="Search by Name or Household ID" value="{{ search_query or '' }}">
             </div>
-            <div class="col-md-5">
+            <div class="col-md-5 mb-3">
                 <label for="session_id" class="visually-hidden">Session</label>
-                <select class="form-select" id="session_id" name="session_id">
+                <select class="form-select" id="session_id " name="session_id">
                     <option value="">All Sessions</option>
                     {% for session in sessions %}
                         <option value="{{ session.id }}" {% if session.id == selected_session_id %}selected{% endif %}>{{ session.name }}</option>

@@ -12,24 +12,42 @@
     margin-left: 0px;
     padding: 0px;
 }
-</style>
 
-<div class="glass-panel" style="
+.login-panel-style {
     display: grid;
-    grid-template-columns: 2fr 1fr; /* Info column wider, login column narrower */
+    grid-template-columns: 2fr 1fr; 
     gap: 30px;
     padding: 30px;
     max-width: 1000px;
     margin: 50px auto;
     min-height: 70vh;
-    align-items: start;
+    align-items: start;    
+}
+
+/*@media (max-width: 768px) {
+    .login-panel-style {
+        display: grid;
+        grid-template-columns: 2fr 1fr; 
+        gap: 30px;
+        padding: 30px;
+        max-width: 1000px;
+        margin: 50px auto;
+        min-height: 70vh;
+        align-items: start;    
+    }    
+}
+*/
+</style>
+
+<div class="glass-panel login-panel-style" style="
+
 ">
 
     <!-- Column 1: Informational Text -->
     <div class="info-column" style="overflow-y: auto; max-height: 70vh;">
                 <h2>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT</h2>
                 <h3>Pantawid Pamilyang Pilipino Program</h3>
-                <h4>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h4>
+                <hr>
                 <p><strong>Information Sheet</strong></p>
                 <p>Ang "Pantawid Pamilyang Pilipino Program (4Ps) Talaan ng Pagbabago at Pag-unlad" ay isang beneficiary self-assessment tool na idinisenyo upang sukatin at subaybayan ang inyong pag-unlad o pagbabago sa mga partner-beneficiaries ng 4Ps.</p>
                 <p>Ito ay sistematikong pamamaraan na nagbibigay-daan upang makita ang resulta mula sa paglahok sa 4Ps. Isa rin itong kasangkapan na magsisilbing gabay sa pagpaplano at pagpapatupad ng mga programa at serbisyo tulad ng Family Development Session (FDS), para sa mga pamilyang benepisyaryo ng 4Ps.</p>
@@ -49,12 +67,16 @@
 
     <!-- Column 2: Login Form -->
     <div class="login-column">
+        <div style="text-align: center;">
+            <h3>4Ps TALAAN NG PAGBABAGO AT PAG-UNLAD</h3>
+        </div>
+
         <form method="POST" action="{{ url_for('login') }}">
-            <div class="question-item  mb-3">
+            <div class="login-item  mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="question-item mb-3">
+            <div class="login-item mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
@@ -62,7 +84,7 @@
                 <input type="checkbox" class="form-check-input" id="remember">
                 <label class="form-check-label" for="remember">Remember Me</label>
             </div>
-            <div class="question-item mb-3">
+            <div class="login-item mb-3">
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </div>
             <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">

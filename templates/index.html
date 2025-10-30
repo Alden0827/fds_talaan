@@ -115,7 +115,7 @@
         <div class="question-grid">
             <div class="question-item">
                 <label for="household_id" class="form-label required">Household ID number:</label>
-                <input type="text" class="form-control mb-3" id="household_id" name="household_id" value="{{ assessment.beneficiary.household_id if assessment else '045810001-9412-00043' }}" required {% if assessment %}readonly{% endif %}>
+                <input type="text" class="form-control mb-3" id="household_id" name="household_id" value="{{ assessment.beneficiary.household_id if assessment else '' }}" required {% if assessment %}readonly{% endif %} placeholder="e.g: 123456789-1234-12345">
                <button type="button" id="btnSearch" class="btn btn-primary mt-2" {% if assessment %}disabled{% endif %}>
                     <i class="fas fa-search"></i> Search
                 </button>
