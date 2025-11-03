@@ -6,6 +6,23 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Assessment Results</h1>
 </div>
+
+<!-- Information / Reminder Notice -->
+<div class="alert alert-secondary shadow-sm" role="alert">
+    <p class="mb-1">
+        The information displayed in this module reflects the most up-to-date assessment data available.
+        However, to ensure system stability and prevent server overload, the downloadable report is
+        <strong>cached and refreshed every 6 hours</strong>.
+    </p>
+    <p class="mb-0">
+        <strong>Reminder:</strong> All information contained in this system is protected under the
+        <em>Data Privacy Act of 2012 (Republic Act No. 10173)</em>. You are responsible for ensuring that
+        any data accessed or downloaded is handled with strict confidentiality and used only for authorized
+        purposes. Unauthorized disclosure or misuse of beneficiary data may result in administrative and legal penalties.
+    </p>
+</div>
+
+<!-- Filter Form -->
 <div class="card mb-4">
     <div class="card-body">
         <form method="GET" action="{{ url_for('results') }}" class="row g-3 align-items-center">
@@ -15,7 +32,7 @@
             </div>
             <div class="col-md-5 mb-3">
                 <label for="session_id" class="visually-hidden">Session</label>
-                <select class="form-select" id="session_id " name="session_id">
+                <select class="form-select" id="session_id" name="session_id">
                     <option value="">All Sessions</option>
                     {% for session in sessions %}
                         <option value="{{ session.id }}" {% if session.id == selected_session_id %}selected{% endif %}>{{ session.name }}</option>
@@ -29,6 +46,7 @@
     </div>
 </div>
 
+<!-- Download Button -->
 <div class="d-flex justify-content-end mb-3">
      <a href="{{ url_for('download_csv') }}" class="btn btn-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
@@ -39,6 +57,7 @@
     </a>
 </div>
 
+<!-- Results Table -->
 {% if assessments %}
 <div class="table-responsive">
     <table class="table table-striped table-hover">

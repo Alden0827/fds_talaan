@@ -13,6 +13,9 @@ import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from functools import wraps
+from flask_caching import Cache
+
+
 SUPER_USER = ['aaquinonXes', 'YSMANTAWIL']
 
 SC_PROV_USERS = ['bbcortez']
@@ -41,6 +44,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+cache = Cache(app, config={
+    'CACHE_TYPE': 'SimpleCache',  # or 'filesystem' / 'redis' for production
+    'CACHE_DEFAULT_TIMEOUT': 6 * 60 * 60  # 6 hours = 21600 seconds
+})
 
 
 @app.context_processor
@@ -862,19 +870,91 @@ def province_dashboard(province_name):
         municipality_chart_data=json.dumps(municipality_chart_data)
     )
 
-@app.route('/download_csv')
-def download_csv():
-    questions = Question.query.order_by(Question.order).all()
-    question_headers = [q.text for q in questions]
-    headers = [
-        'Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'
-    ] + question_headers
+# @app.route('/download_csv')
+# def download_csv():
+#     questions = Question.query.order_by(Question.order).all()
+#     question_headers = [q.text for q in questions]
+#     headers = [
+#         'Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'
+#     ] + question_headers
 
-    assessments = Assessment.query.options(
+#     assessments = Assessment.query.options(
+#         joinedload(Assessment.beneficiary),
+#         joinedload(Assessment.answers).joinedload(Answer.question)
+#     ).all()
+
+#     rows = []
+#     for assessment in assessments:
+#         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
+#         row = {
+#             'Assessment ID': assessment.id,
+#             'Beneficiary Name': assessment.beneficiary.name,
+#             'Household ID': assessment.beneficiary.household_id,
+#             'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
+#         }
+#         for q in questions:
+#             row[q.text] = answer_map.get(q.id, '')
+#         rows.append(row)
+
+#     si = io.StringIO()
+#     writer = csv.DictWriter(si, fieldnames=headers)
+#     writer.writeheader()
+#     writer.writerows(rows)
+#     output = si.getvalue()
+
+#     return Response(
+#         output,
+#         mimetype="text/csv",
+#         headers={"Content-Disposition": "attachment;filename=4ps_assessments_report.csv"}
+#     )
+
+@app.route('/download_csv')
+@login_required
+def download_csv():
+    # ---- Create cache key unique to user and filters ----
+    cache_key = f"csv_{current_user.username}"
+
+    # ---- Check if cached ----
+    cached_csv = cache.get(cache_key)
+    if cached_csv:
+        print("✅ Serving CSV from cache")
+        return Response(
+            cached_csv,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.csv"}
+        )
+
+    print("⏳ Generating fresh CSV data...")
+
+    # ---- Base query ----
+    query = Assessment.query.options(
         joinedload(Assessment.beneficiary),
         joinedload(Assessment.answers).joinedload(Answer.question)
-    ).all()
+    )
 
+    # ---- Apply same user-based filters ----
+    if current_user.username not in SUPER_USER:
+        if current_user.username in ALL_PROV_USERS:
+            query = query.join(Beneficiary)
+            if current_user.username in SK_PROV_USERS:
+                query = query.filter(Beneficiary.province == "SULTAN KUDARAT")
+            elif current_user.username in SC_PROV_USERS:
+                query = query.filter(Beneficiary.province == "SOUTH COTABATO")
+            elif current_user.username in SR_PROV_USERS:
+                query = query.filter(Beneficiary.province == "SARANGANI")
+            elif current_user.username in NC_PROV_USERS:
+                query = query.filter(Beneficiary.province == "COTABATO (NORTH COTABATO)")
+        else:
+            query = query.filter(Assessment.username == current_user.username)
+
+    assessments = query.order_by(Assessment.date_taken.desc()).all()
+
+    # ---- Build CSV headers ----
+    questions = Question.query.order_by(Question.order).all()
+    question_headers = [q.text for q in questions]
+    headers = ['Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'] + question_headers
+
+    # ---- Build rows ----
     rows = []
     for assessment in assessments:
         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
@@ -888,17 +968,23 @@ def download_csv():
             row[q.text] = answer_map.get(q.id, '')
         rows.append(row)
 
+    # ---- Convert to CSV ----
     si = io.StringIO()
     writer = csv.DictWriter(si, fieldnames=headers)
     writer.writeheader()
     writer.writerows(rows)
     output = si.getvalue()
 
+    # ---- Store in cache for 6 hours ----
+    cache.set(cache_key, output, timeout=6 * 60 * 60)
+    print("💾 CSV cached for 6 hours")
+
     return Response(
         output,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment;filename=4ps_assessments_report.csv"}
+        headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.csv"}
     )
+
 
 # --- DB Initialization Command ---
 def get_all_questions():
