@@ -13,8 +13,13 @@ import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from functools import wraps
-SUPER_USER = ['aaquinones', 'YSMANTAWIL']
+SUPER_USER = ['aaquinonXes', 'YSMANTAWIL']
 
+SC_PROV_USERS = ['bbcortez']
+SK_PROV_USERS = ['NGDimatingkal','AEFLORES','jabeglesia']
+SR_PROV_USERS = ['tpguylan','RVDuyag','CAVILLAFLOR']
+NC_PROV_USERS = ['MAYORDOMO','vhtsurdilla','KJTYango']
+ALL_PROV_USERS = SC_PROV_USERS+SK_PROV_USERS+SR_PROV_USERS+NC_PROV_USERS
 
 
 def admin_required(f):
@@ -594,8 +599,22 @@ def results():
 
     query = Assessment.query.options(joinedload(Assessment.beneficiary))
 
+    # Apply user-based filters
     if current_user.username not in SUPER_USER:
-        query = query.filter(Assessment.username == current_user.username)
+        # Provincial users
+        if current_user.username in ALL_PROV_USERS:
+            if current_user.username in SK_PROV_USERS:
+                query = query.join(Beneficiary).filter(Beneficiary.province == "SULTAN KUDARAT")
+            elif current_user.username in SC_PROV_USERS:
+                query = query.join(Beneficiary).filter(Beneficiary.province == "SOUTH COTABATO")
+            elif current_user.username in SR_PROV_USERS:
+                query = query.join(Beneficiary).filter(Beneficiary.province == "SARANGANI")
+            elif current_user.username in NC_PROV_USERS:
+                query = query.join(Beneficiary).filter(Beneficiary.province == "COTABATO (NORTH COTABATO)")
+
+        else:
+            # Individual user filter
+            query = query.filter(Assessment.username == current_user.username)
 
     if selected_session_id:
         query = query.filter(Assessment.session_id == selected_session_id)
