@@ -297,11 +297,10 @@ def login():
             updated_user = cur.fetchone()
         else:
             cur.execute("""
-                INSERT INTO tbl_users (username, firstname, middlename, lastname, email, contact, group_id, status, is_approved, password)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                INSERT INTO tbl_users (username, firstname, middlename, lastname, email, contact, group_id, status, password)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING *;
-            """, (username, firstname, middlename, lastname, email, contact,
-                  8, 'Active', True, generate_password_hash(password)))
+            """, (username, firstname, middlename, lastname, email, contact,8, 'Active', generate_password_hash(password)))
             updated_user = cur.fetchone()
 
         conn.commit()
@@ -1146,5 +1145,5 @@ app.cli.add_command(make_admin_command)
 
 if __name__ == '__main__':
     # app.run(debug=True)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8084, debug=True)
 
