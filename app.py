@@ -14,14 +14,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from functools import wraps
 from flask_caching import Cache
+from sqlalchemy import or_
+import pandas as pd
 
 
-SUPER_USER = ['aaquinonXes', 'YSMANTAWIL']
+SUPER_USER = ['aaquinones', 'YSMANTAWIL']
 
-SC_PROV_USERS = ['bbcortez']
-SK_PROV_USERS = ['NGDimatingkal','AEFLORES','jabeglesia']
+SC_PROV_USERS = ['bbcortez','NLIBRAHIM']
+SK_PROV_USERS = ['NGDimatingkal','AEFLORES','jabeglesia','NATUDON','ngambor','jadubas']
 SR_PROV_USERS = ['tpguylan','RVDuyag','CAVILLAFLOR']
-NC_PROV_USERS = ['MAYORDOMO','vhtsurdilla','KJTYango']
+NC_PROV_USERS = ['MAYORDOMO','vhtsurdilla','KJTYango','BBBIRUAR']
 ALL_PROV_USERS = SC_PROV_USERS+SK_PROV_USERS+SR_PROV_USERS+NC_PROV_USERS
 
 
@@ -597,6 +599,7 @@ def submit():
 def success():
     return render_template('success.html')
 
+
 @app.route('/results')
 def results():
 
@@ -604,55 +607,97 @@ def results():
     selected_session_id = request.args.get('session_id', type=int)
     search_query = request.args.get('search', '')
 
+    username = current_user.username.lower()  # normalize once
+
+    # Base query
     query = Assessment.query.options(joinedload(Assessment.beneficiary))
 
-    # Apply user-based filters
-    if current_user.username not in SUPER_USER:
+    # ------------------------------------------------------------------
+    # USER-BASED ACCESS FILTERS
+    # ------------------------------------------------------------------
+    if username not in {u.lower() for u in SUPER_USER}:
+
         # Provincial users
-        if current_user.username in ALL_PROV_USERS:
-            if current_user.username in SK_PROV_USERS:
-                query = query.join(Beneficiary).filter(Beneficiary.province == "SULTAN KUDARAT")
-            elif current_user.username in SC_PROV_USERS:
-                query = query.join(Beneficiary).filter(Beneficiary.province == "SOUTH COTABATO")
-            elif current_user.username in SR_PROV_USERS:
-                query = query.join(Beneficiary).filter(Beneficiary.province == "SARANGANI")
-            elif current_user.username in NC_PROV_USERS:
-                query = query.join(Beneficiary).filter(Beneficiary.province == "COTABATO (NORTH COTABATO)")
+        if username in {u.lower() for u in ALL_PROV_USERS}:
+
+            # Build a case-insensitive province map
+            province_map = {
+                **{u.lower(): "SULTAN KUDARAT" for u in SK_PROV_USERS},
+                **{u.lower(): "SOUTH COTABATO" for u in SC_PROV_USERS},
+                **{u.lower(): "SARANGANI" for u in SR_PROV_USERS},
+                **{u.lower(): "COTABATO (NORTH COTABATO)" for u in NC_PROV_USERS},
+            }
+
+            province = province_map.get(username)
+
+            if province:
+                query = (
+                    query.join(Beneficiary)
+                         .filter(Beneficiary.province == province)
+                )
 
         else:
-            # Individual user filter
-            query = query.filter(Assessment.username == current_user.username)
+            # Regular user → only own assessments
+            query = query.filter(Assessment.username.ilike(username))
 
+    # ------------------------------------------------------------------
+    # SESSION FILTER
+    # ------------------------------------------------------------------
     if selected_session_id:
         query = query.filter(Assessment.session_id == selected_session_id)
 
+    # ------------------------------------------------------------------
+    # SEARCH FILTER
+    # ------------------------------------------------------------------
     if search_query:
-        query = query.join(Beneficiary).filter(
-            Beneficiary.name.ilike(f'%{search_query}%') |
-            Beneficiary.household_id.ilike(f'%{search_query}%')
+        search = f"%{search_query}%"
+
+        # Ensure Beneficiary is joined only once
+        query = query.join(Beneficiary)
+
+        query = query.filter(
+            or_(
+                Beneficiary.name.ilike(search),
+                Beneficiary.household_id.ilike(search)
+            )
         )
 
+    # Final Results
     assessments = query.order_by(Assessment.date_taken.desc()).all()
 
-    return render_template('results.html',
-                           assessments=assessments,
-                           sessions=sessions,
-                           selected_session_id=selected_session_id,
-                           search_query=search_query)
+    return render_template(
+        'results.html',
+        assessments=assessments,
+        sessions=sessions,
+        selected_session_id=selected_session_id,
+        search_query=search_query
+    )
+
 
 @app.route('/delete_assessment/<int:assessment_id>', methods=['POST'])
 @login_required
 def delete_assessment(assessment_id):
     assessment = Assessment.query.get_or_404(assessment_id)
-    # Add authorization check if needed, e.g., only admin or the user who created it
-    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
+
+    # -------------------------------
+    # Case-insensitive authorization check
+    # -------------------------------
+    username = current_user.username.lower()
+    assessment_username = assessment.username.lower()
+    super_users_lower = {u.lower() for u in SUPER_USER}
+
+    if username not in super_users_lower and assessment_username != username:
         flash('You do not have permission to delete this assessment.', 'danger')
         return redirect(url_for('results'))
 
+    # -------------------------------
+    # Delete assessment
+    # -------------------------------
     db.session.delete(assessment)
     db.session.commit()
     flash('Assessment deleted successfully.', 'success')
     return redirect(url_for('results'))
+
 
 @app.route('/view_assessment/<int:assessment_id>')
 @login_required
@@ -663,7 +708,15 @@ def view_assessment(assessment_id):
     ).get_or_404(assessment_id)
 
     # Authorization check
-    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
+    username = current_user.username.lower()
+    assessment_username = assessment.username.lower()
+
+    # Convert user lists to lowercase sets for fast lookup
+    super_users_lower = {u.lower() for u in SUPER_USER}
+    all_prov_users_lower = {u.lower() for u in ALL_PROV_USERS}
+
+    # Case-insensitive check
+    if (username not in super_users_lower) and (username not in all_prov_users_lower) and (assessment_username != username):
         flash('You do not have permission to view this assessment.', 'danger')
         return redirect(url_for('results'))
 
@@ -681,11 +734,21 @@ def edit_assessment(assessment_id):
         joinedload(Assessment.answers)
     ).get_or_404(assessment_id)
 
-    # Authorization check
-    if current_user.username not in SUPER_USER and assessment.username != current_user.username:
+    # -------------------------------
+    # Authorization check (case-insensitive)
+    # -------------------------------
+    username = current_user.username.lower()
+    assessment_username = assessment.username.lower()
+
+    super_users_lower = {u.lower() for u in SUPER_USER}
+
+    if username not in super_users_lower and assessment_username != username:
         flash('You do not have permission to edit this assessment.', 'danger')
         return redirect(url_for('results'))
 
+    # -------------------------------
+    # Fetch and group questions
+    # -------------------------------
     questions_from_db = Question.query.order_by(Question.order).all()
     grouped_questions = defaultdict(list)
     for q in questions_from_db:
@@ -693,6 +756,9 @@ def edit_assessment(assessment_id):
 
     answers = {answer.question_id: answer.value for answer in assessment.answers}
 
+    # -------------------------------
+    # Load address CSV
+    # -------------------------------
     address_data = defaultdict(lambda: defaultdict(list))
     with open('address.csv', mode='r', encoding='utf-8') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -710,12 +776,15 @@ def edit_assessment(assessment_id):
             address_data[province][municipality] = sorted(list(set(address_data[province][municipality])))
         address_data[province] = dict(sorted(address_data[province].items()))
 
-    return render_template('index.html',
-                           questions=grouped_questions,
-                           provinces=provinces,
-                           address_data=json.dumps(address_data),
-                           assessment=assessment,
-                           answers=answers)
+    return render_template(
+        'index.html',
+        questions=grouped_questions,
+        provinces=provinces,
+        address_data=json.dumps(address_data),
+        assessment=assessment,
+        answers=answers
+    )
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -869,51 +938,17 @@ def province_dashboard(province_name):
         municipality_chart_data=json.dumps(municipality_chart_data)
     )
 
-# @app.route('/download_csv')
-# def download_csv():
-#     questions = Question.query.order_by(Question.order).all()
-#     question_headers = [q.text for q in questions]
-#     headers = [
-#         'Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'
-#     ] + question_headers
-
-#     assessments = Assessment.query.options(
-#         joinedload(Assessment.beneficiary),
-#         joinedload(Assessment.answers).joinedload(Answer.question)
-#     ).all()
-
-#     rows = []
-#     for assessment in assessments:
-#         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
-#         row = {
-#             'Assessment ID': assessment.id,
-#             'Beneficiary Name': assessment.beneficiary.name,
-#             'Household ID': assessment.beneficiary.household_id,
-#             'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
-#         }
-#         for q in questions:
-#             row[q.text] = answer_map.get(q.id, '')
-#         rows.append(row)
-
-#     si = io.StringIO()
-#     writer = csv.DictWriter(si, fieldnames=headers)
-#     writer.writeheader()
-#     writer.writerows(rows)
-#     output = si.getvalue()
-
-#     return Response(
-#         output,
-#         mimetype="text/csv",
-#         headers={"Content-Disposition": "attachment;filename=4ps_assessments_report.csv"}
-#     )
-
 @app.route('/download_csv')
 @login_required
 def download_csv():
-    # ---- Create cache key unique to user and filters ----
-    cache_key = f"csv_{current_user.username}"
 
-    # ---- Check if cached ----
+    # Normalize username to lowercase (case-insensitive matching everywhere)
+    username = current_user.username.lower()
+
+    # ---- Create cache key unique to user ----
+    cache_key = f"csv_{username}"
+
+    # ---- Check cache ----
     cached_csv = cache.get(cache_key)
     if cached_csv:
         print("✅ Serving CSV from cache")
@@ -931,29 +966,149 @@ def download_csv():
         joinedload(Assessment.answers).joinedload(Answer.question)
     )
 
-    # ---- Apply same user-based filters ----
-    if current_user.username not in SUPER_USER:
-        if current_user.username in ALL_PROV_USERS:
-            query = query.join(Beneficiary)
-            if current_user.username in SK_PROV_USERS:
-                query = query.filter(Beneficiary.province == "SULTAN KUDARAT")
-            elif current_user.username in SC_PROV_USERS:
-                query = query.filter(Beneficiary.province == "SOUTH COTABATO")
-            elif current_user.username in SR_PROV_USERS:
-                query = query.filter(Beneficiary.province == "SARANGANI")
-            elif current_user.username in NC_PROV_USERS:
-                query = query.filter(Beneficiary.province == "COTABATO (NORTH COTABATO)")
-        else:
-            query = query.filter(Assessment.username == current_user.username)
+    # ------------------------------------------------------
+    # USER-BASED ACCESS CONTROL (case-insensitive)
+    # ------------------------------------------------------
 
+    # Convert your user lists into lowercase sets for fast lookups
+    SUPER_USERS_L = {u.lower() for u in SUPER_USER}
+    ALL_PROV_USERS_L = {u.lower() for u in ALL_PROV_USERS}
+    SK_PROV_USERS_L = {u.lower() for u in SK_PROV_USERS}
+    SC_PROV_USERS_L = {u.lower() for u in SC_PROV_USERS}
+    SR_PROV_USERS_L = {u.lower() for u in SR_PROV_USERS}
+    NC_PROV_USERS_L = {u.lower() for u in NC_PROV_USERS}
+
+    # Non-super users require filtering
+    if username not in SUPER_USERS_L:
+
+        # Provincial users
+        if username in ALL_PROV_USERS_L:
+
+            # Only join Beneficiary once
+            query = query.join(Beneficiary)
+
+            # Province map for cleaner logic
+            province_map = {
+                **{u: "SULTAN KUDARAT" for u in SK_PROV_USERS_L},
+                **{u: "SOUTH COTABATO" for u in SC_PROV_USERS_L},
+                **{u: "SARANGANI" for u in SR_PROV_USERS_L},
+                **{u: "COTABATO (NORTH COTABATO)" for u in NC_PROV_USERS_L},
+            }
+
+            province = province_map.get(username)
+            if province:
+                query = query.filter(Beneficiary.province == province)
+
+        else:
+            # Normal user → only see own assessments
+            query = query.filter(Assessment.username.ilike(username))
+
+    # ---- Final data retrieval ----
     assessments = query.order_by(Assessment.date_taken.desc()).all()
 
     # ---- Build CSV headers ----
     questions = Question.query.order_by(Question.order).all()
     question_headers = [q.text for q in questions]
+
+    headers = [
+        'Assessment ID',
+        'Beneficiary Name',
+        'Household ID',
+        'Date Taken'
+    ] + question_headers
+
+    # ---- Build CSV rows ----
+    rows = []
+    for assessment in assessments:
+        answer_map = {ans.question_id: ans.value for ans in assessment.answers}
+
+        row = {
+            'Assessment ID': assessment.id,
+            'Beneficiary Name': assessment.beneficiary.name,
+            'Household ID': assessment.beneficiary.household_id,
+            'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+
+        for q in questions:
+            row[q.text] = answer_map.get(q.id, '')
+
+        rows.append(row)
+
+    # ---- Convert to CSV ----
+    si = io.StringIO()
+    writer = csv.DictWriter(si, fieldnames=headers)
+    writer.writeheader()
+    writer.writerows(rows)
+    output = si.getvalue()
+
+    # ---- Cache CSV for 6 hours ----
+    cache.set(cache_key, output, timeout=6 * 60 * 60)
+    print("💾 CSV cached for 6 hours")
+
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.csv"}
+    )
+
+@app.route('/download_xlsx')
+@login_required
+def download_xlsx():
+    # Normalize username for case-insensitive filtering
+    username = current_user.username.lower()
+
+    # Cache key
+    cache_key = f"xlsx_{username}"
+
+    # Check cache
+    cached_xlsx = cache.get(cache_key)
+    if cached_xlsx:
+        print("✅ Serving XLSX from cache")
+        return Response(
+            cached_xlsx,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.xlsx"}
+        )
+
+    print("⏳ Generating fresh XLSX data...")
+
+    # Base query
+    query = Assessment.query.options(
+        joinedload(Assessment.beneficiary),
+        joinedload(Assessment.answers).joinedload(Answer.question)
+    )
+
+    # USER-BASED ACCESS CONTROL
+    SUPER_USERS_L = {u.lower() for u in SUPER_USER}
+    ALL_PROV_USERS_L = {u.lower() for u in ALL_PROV_USERS}
+    SK_PROV_USERS_L = {u.lower() for u in SK_PROV_USERS}
+    SC_PROV_USERS_L = {u.lower() for u in SC_PROV_USERS}
+    SR_PROV_USERS_L = {u.lower() for u in SR_PROV_USERS}
+    NC_PROV_USERS_L = {u.lower() for u in NC_PROV_USERS}
+
+    if username not in SUPER_USERS_L:
+        if username in ALL_PROV_USERS_L:
+            query = query.join(Beneficiary)
+            province_map = {
+                **{u: "SULTAN KUDARAT" for u in SK_PROV_USERS_L},
+                **{u: "SOUTH COTABATO" for u in SC_PROV_USERS_L},
+                **{u: "SARANGANI" for u in SR_PROV_USERS_L},
+                **{u: "COTABATO (NORTH COTABATO)" for u in NC_PROV_USERS_L},
+            }
+            province = province_map.get(username)
+            if province:
+                query = query.filter(Beneficiary.province == province)
+        else:
+            query = query.filter(Assessment.username.ilike(username))
+
+    assessments = query.order_by(Assessment.date_taken.desc()).all()
+
+    # Build headers
+    questions = Question.query.order_by(Question.order).all()
+    question_headers = [q.text for q in questions]
     headers = ['Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'] + question_headers
 
-    # ---- Build rows ----
+    # Build rows
     rows = []
     for assessment in assessments:
         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
@@ -967,21 +1122,21 @@ def download_csv():
             row[q.text] = answer_map.get(q.id, '')
         rows.append(row)
 
-    # ---- Convert to CSV ----
-    si = io.StringIO()
-    writer = csv.DictWriter(si, fieldnames=headers)
-    writer.writeheader()
-    writer.writerows(rows)
-    output = si.getvalue()
+    # Convert to XLSX in memory using pandas
+    df = pd.DataFrame(rows, columns=headers)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Assessments')
+    xlsx_data = output.getvalue()
 
-    # ---- Store in cache for 6 hours ----
-    cache.set(cache_key, output, timeout=6 * 60 * 60)
-    print("💾 CSV cached for 6 hours")
+    # Cache XLSX for 6 hours
+    cache.set(cache_key, xlsx_data, timeout=6*60*60)
+    print("💾 XLSX cached for 6 hours")
 
     return Response(
-        output,
-        mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.csv"}
+        xlsx_data,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.xlsx"}
     )
 
 
