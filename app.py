@@ -938,6 +938,15 @@ def province_dashboard(province_name):
         municipality_chart_data=json.dumps(municipality_chart_data)
     )
 
+@app.route('/clear_xlsx_cache')
+@login_required
+def clear_xlsx_cache():
+    username = current_user.username.lower()
+    cache_key = f"xlsx_{username}"
+
+    cache.delete(cache_key)
+    return "Cache cleared. Next download will generate fresh data."
+
 @app.route('/download_csv')
 @login_required
 def download_csv():
@@ -1014,21 +1023,30 @@ def download_csv():
         'Assessment ID',
         'Beneficiary Name',
         'Household ID',
+        'Province',
+        'Municipality',
+        'Barangay',
         'Date Taken'
     ] + question_headers
 
-    # ---- Build CSV rows ----
+
+    # Build rows
     rows = []
     for assessment in assessments:
+        b = assessment.beneficiary
         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
 
         row = {
             'Assessment ID': assessment.id,
-            'Beneficiary Name': assessment.beneficiary.name,
-            'Household ID': assessment.beneficiary.household_id,
+            'Beneficiary Name': b.name,
+            'Household ID': b.household_id,
+            'Province': b.province,
+            'Municipality': b.municipality,
+            'Barangay': b.barangay,
             'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
+        # Add dynamic question answers
         for q in questions:
             row[q.text] = answer_map.get(q.id, '')
 
@@ -1106,20 +1124,37 @@ def download_xlsx():
     # Build headers
     questions = Question.query.order_by(Question.order).all()
     question_headers = [q.text for q in questions]
-    headers = ['Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'] + question_headers
+    # headers = ['Assessment ID', 'Beneficiary Name', 'Household ID', 'Date Taken'] + question_headers
+    headers = [
+        'Assessment ID',
+        'Beneficiary Name',
+        'Household ID',
+        'Province',
+        'Municipality',
+        'Barangay',
+        'Date Taken'
+    ] + question_headers
 
     # Build rows
     rows = []
     for assessment in assessments:
+        b = assessment.beneficiary
         answer_map = {ans.question_id: ans.value for ans in assessment.answers}
+
         row = {
             'Assessment ID': assessment.id,
-            'Beneficiary Name': assessment.beneficiary.name,
-            'Household ID': assessment.beneficiary.household_id,
+            'Beneficiary Name': b.name,
+            'Household ID': b.household_id,
+            'Province': b.province,
+            'Municipality': b.municipality,
+            'Barangay': b.barangay,
             'Date Taken': assessment.date_taken.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
+        # Add dynamic question answers
         for q in questions:
             row[q.text] = answer_map.get(q.id, '')
+
         rows.append(row)
 
     # Convert to XLSX in memory using pandas
