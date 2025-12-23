@@ -1069,6 +1069,14 @@ def download_csv():
         headers={"Content-Disposition": "attachment; filename=4ps_assessments_report.csv"}
     )
 
+def clean_illegal_chars(val):
+    import re
+    """Removes non-printable characters that crash openpyxl."""
+    if isinstance(val, str):
+        # Removes ASCII control characters (0-31) except for tab, newline, and carriage return
+        return re.sub(r'[\000-\010\013\014\016-\037]', '', val)
+    return val
+
 @app.route('/download_xlsx')
 @login_required
 def download_xlsx():
@@ -1159,6 +1167,8 @@ def download_xlsx():
 
     # Convert to XLSX in memory using pandas
     df = pd.DataFrame(rows, columns=headers)
+    df = df.applymap(clean_illegal_chars)
+    
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Assessments')
