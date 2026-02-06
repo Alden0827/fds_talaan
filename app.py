@@ -17,15 +17,12 @@ from flask_caching import Cache
 from sqlalchemy import or_
 import pandas as pd
 
-
 SUPER_USER = ['aaquinones', 'YSMANTAWIL']
-
 SC_PROV_USERS = ['bbcortez','NLIBRAHIM']
 SK_PROV_USERS = ['NGDimatingkal','AEFLORES','jabeglesia','NATUDON','ngambor','jadubas']
 SR_PROV_USERS = ['tpguylan','RVDuyag','CAVILLAFLOR']
 NC_PROV_USERS = ['MAYORDOMO','vhtsurdilla','KJTYango','BBBIRUAR']
 ALL_PROV_USERS = SC_PROV_USERS+SK_PROV_USERS+SR_PROV_USERS+NC_PROV_USERS
-
 
 def admin_required(f):
     @wraps(f)
@@ -122,34 +119,10 @@ class SurveySession(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- Routes ---
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('index'))
-#     if request.method == 'POST':
-#         username = request.form['username']
-#         password = request.form['password']
-#         user = User.query.filter_by(username=username).first()
-#         if user and user.check_password(password):
-#             if user.is_approved:
-#                 login_user(user)
-#                 return redirect(url_for('index'))
-#             else:
-#                 flash('Your account is pending approval.', 'warning')
-#         else:
-#             flash('Invalid username or password.', 'danger')
-#     return render_template('login.html')
-
-# from flask import render_template, request, redirect, url_for, flash
-# from flask_login import login_user, current_user
 from ldap3 import Server, Connection, ALL
 import psycopg2
 from psycopg2.extras import RealDictCursor
-# from werkzeug.security import check_password_hash, generate_password_hash
-# from models import User, db  # assuming your SQLAlchemy models are here
-# --- Database connection config ---
-# --- DB Connection Helper ---
+
 def get_db_connection():
     return psycopg2.connect(
         host="localhost",
@@ -204,6 +177,121 @@ def whoami():
     })
 
 # --- LOGIN ROUTE ---
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if current_user.is_authenticated:
+#         return redirect(url_for('index'))
+
+#     if request.method == 'POST':
+#         username = request.form['username'].strip()
+#         password = request.form['password'].strip()
+
+#         conn = get_db_connection()
+#         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)  # ensures dict results
+
+#         # --- LOCAL AUTH ---
+#         cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
+#         user = cur.fetchone()
+
+#         if user:
+#             stored_hash = user.get('password', '')
+#             is_valid = False
+
+#             if stored_hash.startswith('pbkdf2:'):
+#                 is_valid = check_password_hash(stored_hash, password)
+#             elif stored_hash == password:  # plaintext fallback
+#                 is_valid = True
+#                 new_hash = generate_password_hash(password)
+#                 cur.execute("UPDATE tbl_users SET password=%s WHERE username=%s", (new_hash, username))
+#                 conn.commit()
+
+#             if is_valid:
+#                 if user.get('is_approved', True):
+#                     # re-fetch latest version so current_user is up-to-date
+#                     cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
+#                     updated_user = cur.fetchone()
+
+#                     login_user(SimpleUser(updated_user))
+#                     flash('Login successful (local authentication).', 'success')
+
+#                     cur.close()
+#                     conn.close()
+#                     return redirect(url_for('index'))
+#                 else:
+#                     flash('Your account is pending approval.', 'warning')
+#                     cur.close()
+#                     conn.close()
+#                     return redirect(url_for('login'))
+
+#         # --- LDAP AUTH ---
+#         ad_server = "ldap://ENTDSWD.LOCAL"
+#         domain = "ENTDSWD"
+#         server = Server(ad_server, get_info=ALL)
+#         user_dn = f"{domain}\\{username}"
+#         ldap_conn = Connection(server, user=user_dn, password=password, auto_bind=False)
+
+#         if not ldap_conn.bind():
+#             flash('Invalid username or password.', 'danger')
+#             cur.close()
+#             conn.close()
+#             return redirect(url_for('login'))
+
+#         # Search user details in AD
+#         ldap_conn.search(
+#             search_base="DC=ENTDSWD,DC=LOCAL",
+#             search_filter=f"(sAMAccountName={username})",
+#             attributes=["givenName", "initials", "sn", "mail", "mobile"]
+#         )
+
+#         if not ldap_conn.entries:
+#             flash('LDAP account not found.', 'danger')
+#             cur.close()
+#             conn.close()
+#             return redirect(url_for('login'))
+
+#         entry = ldap_conn.entries[0]
+#         firstname = str(entry.givenName) if 'givenName' in entry else ''
+#         middlename = str(entry.initials) if 'initials' in entry else ''
+#         lastname = str(entry.sn) if 'sn' in entry else ''
+#         email = str(entry.mail) if 'mail' in entry else ''
+#         contact = str(entry.mobile) if 'mobile' in entry else ''
+
+#         # --- UPSERT USER ---
+#         cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
+#         existing_user = cur.fetchone()
+
+#         if existing_user:
+#             cur.execute("""
+#                 UPDATE tbl_users
+#                 SET firstname=%s, middlename=%s, lastname=%s, email=%s,
+#                     contact=%s, password=%s
+#                 WHERE username=%s
+#                 RETURNING *;
+#             """, (firstname, middlename, lastname, email, contact,
+#                   generate_password_hash(password), username))
+#             updated_user = cur.fetchone()
+#         else:
+#             cur.execute("""
+#                 INSERT INTO tbl_users (username, firstname, middlename, lastname, email, contact, group_id, status, password)
+#                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+#                 RETURNING *;
+#             """, (username, firstname, middlename, lastname, email, contact,8, 'Active', generate_password_hash(password)))
+#             updated_user = cur.fetchone()
+
+#         conn.commit()
+#         cur.close()
+#         conn.close()
+#         ldap_conn.unbind()
+
+#         # --- LOGIN with up-to-date user ---
+#         login_user(SimpleUser(updated_user))
+#         flash('Login successful (LDAP authentication).', 'success')
+#         return redirect(url_for('index'))
+
+#     return render_template('login.html')
+
+
+# ldap-first
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -214,136 +302,128 @@ def login():
         password = request.form['password'].strip()
 
         conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)  # ensures dict results
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # --- LOCAL AUTH ---
-        cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
+        # ==========================
+        # 1. LDAP AUTH FIRST
+        # ==========================
+        try:
+            ad_server = "ldap://ENTDSWD.LOCAL"
+            domain = "ENTDSWD"
+            server = Server(ad_server, get_info=ALL)
+
+            user_dn = f"{domain}\\{username}"
+            ldap_conn = Connection(
+                server,
+                user=user_dn,
+                password=password,
+                auto_bind=True
+            )
+
+            # --- LDAP SEARCH ---
+            ldap_conn.search(
+                search_base="DC=ENTDSWD,DC=LOCAL",
+                search_filter=f"(sAMAccountName={username})",
+                attributes=["givenName", "initials", "sn", "mail", "mobile"]
+            )
+
+            if not ldap_conn.entries:
+                raise Exception("LDAP user not found")
+
+            entry = ldap_conn.entries[0]
+            firstname  = str(entry.givenName) if 'givenName' in entry else ''
+            middlename = str(entry.initials) if 'initials' in entry else ''
+            lastname   = str(entry.sn) if 'sn' in entry else ''
+            email      = str(entry.mail) if 'mail' in entry else ''
+            contact    = str(entry.mobile) if 'mobile' in entry else ''
+
+            # --- UPSERT LOCAL USER ---
+            cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
+            user = cur.fetchone()
+
+            if user:
+                cur.execute("""
+                    UPDATE tbl_users
+                    SET firstname=%s, middlename=%s, lastname=%s,
+                        email=%s, contact=%s, status='Active'
+                    WHERE username=%s
+                    RETURNING *;
+                """, (firstname, middlename, lastname, email, contact, username))
+            else:
+                cur.execute("""
+                    INSERT INTO tbl_users
+                    (username, firstname, middlename, lastname, email, contact,
+                     group_id, status)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,'Active')
+                    RETURNING *;
+                """, (username, firstname, middlename, lastname,
+                      email, contact, 8))
+
+            updated_user = cur.fetchone()
+            conn.commit()
+
+            ldap_conn.unbind()
+            cur.close()
+            conn.close()
+
+            login_user(SimpleUser(updated_user))
+            flash('Login successful (LDAP).', 'success')
+            return redirect(url_for('index'))
+
+        except Exception:
+            # LDAP failed → fallback to local auth
+            pass
+
+        # ==========================
+        # 2. LOCAL AUTH FALLBACK
+        # ==========================
+        cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
         user = cur.fetchone()
 
-        if user:
-            stored_hash = user.get('password', '')
-            is_valid = False
-
-            if stored_hash.startswith('pbkdf2:'):
-                is_valid = check_password_hash(stored_hash, password)
-            elif stored_hash == password:  # plaintext fallback
-                is_valid = True
-                new_hash = generate_password_hash(password)
-                cur.execute("UPDATE tbl_users SET password=%s WHERE username=%s", (new_hash, username))
-                conn.commit()
-
-            if is_valid:
-                if user.get('is_approved', True):
-                    # re-fetch latest version so current_user is up-to-date
-                    cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
-                    updated_user = cur.fetchone()
-
-                    login_user(SimpleUser(updated_user))
-                    flash('Login successful (local authentication).', 'success')
-
-                    cur.close()
-                    conn.close()
-                    return redirect(url_for('index'))
-                else:
-                    flash('Your account is pending approval.', 'warning')
-                    cur.close()
-                    conn.close()
-                    return redirect(url_for('login'))
-
-        # --- LDAP AUTH ---
-        ad_server = "ldap://ENTDSWD.LOCAL"
-        domain = "ENTDSWD"
-        server = Server(ad_server, get_info=ALL)
-        user_dn = f"{domain}\\{username}"
-        ldap_conn = Connection(server, user=user_dn, password=password, auto_bind=False)
-
-        if not ldap_conn.bind():
+        if not user:
             flash('Invalid username or password.', 'danger')
             cur.close()
             conn.close()
             return redirect(url_for('login'))
 
-        # Search user details in AD
-        ldap_conn.search(
-            search_base="DC=ENTDSWD,DC=LOCAL",
-            search_filter=f"(sAMAccountName={username})",
-            attributes=["givenName", "initials", "sn", "mail", "mobile"]
-        )
+        stored_hash = user.get('password', '')
+        is_valid = False
 
-        if not ldap_conn.entries:
-            flash('LDAP account not found.', 'danger')
+        if stored_hash.startswith('pbkdf2:'):
+            is_valid = check_password_hash(stored_hash, password)
+        elif stored_hash == password:
+            is_valid = True
+            new_hash = generate_password_hash(password)
+            cur.execute(
+                "UPDATE tbl_users SET password=%s WHERE username=%s",
+                (new_hash, username)
+            )
+            conn.commit()
+
+        if not is_valid:
+            flash('Invalid username or password.', 'danger')
             cur.close()
             conn.close()
             return redirect(url_for('login'))
 
-        entry = ldap_conn.entries[0]
-        firstname = str(entry.givenName) if 'givenName' in entry else ''
-        middlename = str(entry.initials) if 'initials' in entry else ''
-        lastname = str(entry.sn) if 'sn' in entry else ''
-        email = str(entry.mail) if 'mail' in entry else ''
-        contact = str(entry.mobile) if 'mobile' in entry else ''
+        if not user.get('is_approved', True):
+            flash('Your account is pending approval.', 'warning')
+            cur.close()
+            conn.close()
+            return redirect(url_for('login'))
 
-        # --- UPSERT USER ---
-        cur.execute("SELECT * FROM tbl_users WHERE username = %s", (username,))
-        existing_user = cur.fetchone()
+        # refresh user
+        cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
+        updated_user = cur.fetchone()
 
-        if existing_user:
-            cur.execute("""
-                UPDATE tbl_users
-                SET firstname=%s, middlename=%s, lastname=%s, email=%s,
-                    contact=%s, password=%s
-                WHERE username=%s
-                RETURNING *;
-            """, (firstname, middlename, lastname, email, contact,
-                  generate_password_hash(password), username))
-            updated_user = cur.fetchone()
-        else:
-            cur.execute("""
-                INSERT INTO tbl_users (username, firstname, middlename, lastname, email, contact, group_id, status, password)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                RETURNING *;
-            """, (username, firstname, middlename, lastname, email, contact,8, 'Active', generate_password_hash(password)))
-            updated_user = cur.fetchone()
-
-        conn.commit()
         cur.close()
         conn.close()
-        ldap_conn.unbind()
 
-        # --- LOGIN with up-to-date user ---
         login_user(SimpleUser(updated_user))
-        flash('Login successful (LDAP authentication).', 'success')
+        flash('Login successful (local fallback).', 'success')
         return redirect(url_for('index'))
 
     return render_template('login.html')
-
-# ------------------------------
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('index'))
-#     if request.method == 'POST':
-#         password = request.form['password']
-#         confirm_password = request.form['confirm_password']
-
-#         if password != confirm_password:
-#             flash('Passwords do not match.', 'danger')
-#             return redirect(url_for('register'))
-
-#         user = User(
-#             fullname=request.form['fullname'],
-#             position=request.form['position'],
-#             area_of_assignment=request.form['area_of_assignment'],
-#             username=request.form['username'],
-#             email=request.form['email'],
-#             phone_number=request.form['phone_number']
-#         )
-#         user.set_password(password)
-#         db.session.add(user)
-#         db.session.commit()
-#         flash('Registration successful! Please wait for admin approval.', 'success')
-#         return redirect(url_for('login'))
-#     return render_template('register.html')
 
 @app.route('/logout')
 @login_required
