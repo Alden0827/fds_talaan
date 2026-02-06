@@ -1,21 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, Response, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, or_
+from sqlalchemy.orm import joinedload
 import os
 import click
 from flask.cli import with_appcontext
 from collections import defaultdict
 import csv
 import io
-from sqlalchemy.orm import joinedload
 import json
+import requests
+import urllib3
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from functools import wraps
 from flask_caching import Cache
-from sqlalchemy import or_
-import pandas as pd
+
+# Disable insecure request warnings for internal API
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 SUPER_USER = ['aaquinones', 'YSMANTAWIL']
 SC_PROV_USERS = ['bbcortez','NLIBRAHIM']
@@ -39,6 +44,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a-very-secret-key' # Needed for flash messages
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# API Configuration
+app.config['AUTH_API_KEY'] = '82fac04e-f7b5-4d35-b3bd-590af47b7f1b'
+app.config['AUTH_API_BASE_URL'] = 'https://172.31.196.14:8443'
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -115,14 +124,6 @@ class SurveySession(db.Model):
     name = db.Column(db.String(150), nullable=False)
     is_active = db.Column(db.Boolean, default=False)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-from ldap3 import Server, Connection, ALL
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
 def get_db_connection():
     return psycopg2.connect(
         host="localhost",
@@ -146,7 +147,10 @@ class SimpleUser(UserMixin):
         self.is_approved = user_dict.get("is_approved", True)
         self.password = user_dict.get("password")
 
-
+    @property
+    def is_admin(self):
+        # Check if the username is in the SUPER_USER list
+        return self.username in SUPER_USER
 
     def get_id(self):
         # Flask-Login uses this for session tracking
@@ -154,18 +158,24 @@ class SimpleUser(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute("SELECT * FROM tbl_users WHERE user_id = %s", (user_id,))
-    user = cur.fetchone()
-    cur.close()
-    conn.close()
+    """
+    Loads user from the PostgreSQL database (tbl_users).
+    This is used by Flask-Login for session management.
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("SELECT * FROM tbl_users WHERE user_id = %s", (user_id,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
 
-    if user:
-        return SimpleUser(user)
+        if user:
+            return SimpleUser(user)
+    except Exception as e:
+        print(f"Error loading user: {e}")
     return None
 
-from flask import jsonify
 @app.route('/whoami')
 @login_required
 def whoami():
@@ -305,37 +315,53 @@ def login():
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         # ==========================
-        # 1. LDAP AUTH FIRST
+        # 1. API AUTH FIRST (LDAP via API)
         # ==========================
         try:
-            ad_server = "ldap://ENTDSWD.LOCAL"
-            domain = "ENTDSWD"
-            server = Server(ad_server, get_info=ALL)
+            api_key = app.config['AUTH_API_KEY']
+            base_url = app.config['AUTH_API_BASE_URL']
 
-            user_dn = f"{domain}\\{username}"
-            ldap_conn = Connection(
-                server,
-                user=user_dn,
-                password=password,
-                auto_bind=True
+            # Request authentication token
+            token_response = requests.post(
+                f"{base_url}/api/request_token",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-API-Key": api_key
+                },
+                json={"username": username, "password": password},
+                verify=False,
+                timeout=10
             )
 
-            # --- LDAP SEARCH ---
-            ldap_conn.search(
-                search_base="DC=ENTDSWD,DC=LOCAL",
-                search_filter=f"(sAMAccountName={username})",
-                attributes=["givenName", "initials", "sn", "mail", "mobile"]
+            token_data = token_response.json()
+            if not token_data.get('success'):
+                raise Exception(f"API Token request failed: {token_data.get('message', 'Unknown error')}")
+
+            token = token_data.get('token')
+
+            # Retrieve user information using the token
+            user_info_response = requests.post(
+                f"{base_url}/api/user_info",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-API-Key": api_key
+                },
+                json={"token": token},
+                verify=False,
+                timeout=10
             )
 
-            if not ldap_conn.entries:
-                raise Exception("LDAP user not found")
+            user_info_data = user_info_response.json()
+            if not user_info_data.get('success'):
+                raise Exception(f"API User info request failed: {user_info_data.get('message', 'Unknown error')}")
 
-            entry = ldap_conn.entries[0]
-            firstname  = str(entry.givenName) if 'givenName' in entry else ''
-            middlename = str(entry.initials) if 'initials' in entry else ''
-            lastname   = str(entry.sn) if 'sn' in entry else ''
-            email      = str(entry.mail) if 'mail' in entry else ''
-            contact    = str(entry.mobile) if 'mobile' in entry else ''
+            user_api_data = user_info_data.get('user', {})
+
+            firstname  = user_api_data.get('givenName', '')
+            middlename = user_api_data.get('initials', '')
+            lastname   = user_api_data.get('sn', '')
+            email      = user_api_data.get('email', '')
+            contact    = user_api_data.get('mobile', '')
 
             # --- UPSERT LOCAL USER ---
             cur.execute("SELECT * FROM tbl_users WHERE username=%s", (username,))
@@ -362,16 +388,16 @@ def login():
             updated_user = cur.fetchone()
             conn.commit()
 
-            ldap_conn.unbind()
             cur.close()
             conn.close()
 
             login_user(SimpleUser(updated_user))
-            flash('Login successful (LDAP).', 'success')
+            flash('Login successful (API Auth).', 'success')
             return redirect(url_for('index'))
 
-        except Exception:
-            # LDAP failed → fallback to local auth
+        except Exception as e:
+            # API Auth failed → fallback to local auth
+            print(f"API Auth error: {e}")
             pass
 
         # ==========================
